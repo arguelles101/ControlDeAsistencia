@@ -7,10 +7,12 @@ package com.ieepo.checador;
 
 import com.ieepo.checador.components.Imagen;
 import com.ieepo.checador.db.ConnectionBD;
+import com.ieepo.checador.model.AdminCt;
 import com.ieepo.checador.model.Empleado;
 import com.ieepo.checador.model.Horario;
 import com.ieepo.checador.model.HorarioEmpleado;
 import java.awt.AWTException;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
@@ -83,15 +85,11 @@ public class Checador extends javax.swing.JApplet {
                         break;
                     }
                 }
-            } catch (ClassNotFoundException ex) {
-                java.util.logging.Logger.getLogger(Checador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } catch (InstantiationException ex) {
-                java.util.logging.Logger.getLogger(Checador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } catch (IllegalAccessException ex) {
-                java.util.logging.Logger.getLogger(Checador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
                 java.util.logging.Logger.getLogger(Checador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
+            //</editor-fold>
+            
             //</editor-fold>
             
             /* Create and display the applet */
@@ -150,6 +148,26 @@ public class Checador extends javax.swing.JApplet {
         lbMes = new org.jdesktop.swingx.JXLabel();
         btnAcceder = new javax.swing.JButton();
         jpFondo = new org.jdesktop.swingx.JXPanel();
+        jpLogin = new org.jdesktop.swingx.JXPanel();
+        btnRegresar = new javax.swing.JButton();
+        cmbAdmin = new javax.swing.JComboBox<>();
+        jpHuellas = new org.jdesktop.swingx.JXPanel();
+        jpPanelHuellas = new javax.swing.JPanel();
+        lbEmpleado = new javax.swing.JLabel();
+        cbEmpleados = new javax.swing.JComboBox<>();
+        jpHuellasFondo = new javax.swing.JPanel();
+        btn1d = new javax.swing.JButton();
+        btn2d = new javax.swing.JButton();
+        btn3d = new javax.swing.JButton();
+        btn4d = new javax.swing.JButton();
+        btn5d = new javax.swing.JButton();
+        btn5i = new javax.swing.JButton();
+        btn4i = new javax.swing.JButton();
+        btn3i = new javax.swing.JButton();
+        btn2i = new javax.swing.JButton();
+        btn1i = new javax.swing.JButton();
+        btnAceptar = new javax.swing.JButton();
+        txtNombre = new javax.swing.JTextField();
 
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setMinimumSize(new java.awt.Dimension(400, 200));
@@ -237,6 +255,11 @@ public class Checador extends javax.swing.JApplet {
 
         btnAcceder.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         btnAcceder.setText("Acceder");
+        btnAcceder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAccederActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jpChecadorLayout = new javax.swing.GroupLayout(jpChecador);
         jpChecador.setLayout(jpChecadorLayout);
@@ -258,20 +281,293 @@ public class Checador extends javax.swing.JApplet {
                 .addComponent(btnAcceder)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jXPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(114, Short.MAX_VALUE))
+                .addContainerGap(108, Short.MAX_VALUE))
         );
 
         jpFondo.setPreferredSize(new java.awt.Dimension(1000, 500));
+
+        jpLogin.setBackground(new java.awt.Color(255, 255, 255));
+        jpLogin.setPreferredSize(new java.awt.Dimension(1000, 500));
+
+        btnRegresar.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        btnRegresar.setText("Regresar");
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegresarActionPerformed(evt);
+            }
+        });
+
+        cmbAdmin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        javax.swing.GroupLayout jpLoginLayout = new javax.swing.GroupLayout(jpLogin);
+        jpLogin.setLayout(jpLoginLayout);
+        jpLoginLayout.setHorizontalGroup(
+            jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpLoginLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnRegresar)
+                .addGap(125, 125, 125))
+            .addGroup(jpLoginLayout.createSequentialGroup()
+                .addGap(284, 284, 284)
+                .addComponent(cmbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(356, Short.MAX_VALUE))
+        );
+        jpLoginLayout.setVerticalGroup(
+            jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpLoginLayout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addComponent(btnRegresar)
+                .addGap(18, 18, 18)
+                .addComponent(cmbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(387, Short.MAX_VALUE))
+        );
+
+        jpHuellas.setBackground(new java.awt.Color(255, 153, 153));
+        jpHuellas.setPreferredSize(new java.awt.Dimension(1000, 500));
+
+        jpPanelHuellas.setBackground(new java.awt.Color(255, 255, 255));
+        jpPanelHuellas.setPreferredSize(new java.awt.Dimension(500, 400));
+
+        lbEmpleado.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        lbEmpleado.setText("Seleccione el empleado:");
+
+        cbEmpleados.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        cbEmpleados.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Maximiliano Perez Luna", "Pedro Luis Martinez Guzman", "Jose Manuel Eugenio Luna", "Victor Manuel Arguelles Alcazar" }));
+        cbEmpleados.setPreferredSize(new java.awt.Dimension(300, 21));
+        cbEmpleados.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbEmpleadosActionPerformed(evt);
+            }
+        });
+
+        jpHuellasFondo.setBackground(new java.awt.Color(204, 204, 204));
+        jpHuellasFondo.setPreferredSize(new java.awt.Dimension(375, 245));
+
+        btn1d.setText("1d");
+        btn1d.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn1dActionPerformed(evt);
+            }
+        });
+
+        btn2d.setText("2d");
+        btn2d.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn2dActionPerformed(evt);
+            }
+        });
+
+        btn3d.setText("3d");
+        btn3d.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn3dActionPerformed(evt);
+            }
+        });
+
+        btn4d.setText("4d");
+        btn4d.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn4dActionPerformed(evt);
+            }
+        });
+
+        btn5d.setText("5d");
+        btn5d.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn5dActionPerformed(evt);
+            }
+        });
+
+        btn5i.setText("5i");
+        btn5i.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn5iActionPerformed(evt);
+            }
+        });
+
+        btn4i.setText("4i");
+        btn4i.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn4iActionPerformed(evt);
+            }
+        });
+
+        btn3i.setText("3i");
+        btn3i.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn3iActionPerformed(evt);
+            }
+        });
+
+        btn2i.setText("2i");
+        btn2i.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn2iActionPerformed(evt);
+            }
+        });
+
+        btn1i.setText("1i");
+        btn1i.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn1iActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jpHuellasFondoLayout = new javax.swing.GroupLayout(jpHuellasFondo);
+        jpHuellasFondo.setLayout(jpHuellasFondoLayout);
+        jpHuellasFondoLayout.setHorizontalGroup(
+            jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                        .addGap(152, 152, 152)
+                        .addComponent(btn1i)
+                        .addGap(9, 9, 9))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpHuellasFondoLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btn4i)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn3i)
+                        .addGap(3, 3, 3)
+                        .addComponent(btn2i)
+                        .addGap(57, 57, 57)))
+                .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                        .addComponent(btn2d)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn3d)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn4d)
+                        .addGap(16, 16, 16))
+                    .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(btn1d)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                .addComponent(btn5i)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btn5d))
+        );
+        jpHuellasFondoLayout.setVerticalGroup(
+            jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                        .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                                .addGap(20, 20, 20)
+                                .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btn2i)
+                                    .addComponent(btn3i)))
+                            .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                                .addGap(39, 39, 39)
+                                .addComponent(btn4i)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn5i))
+                    .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                        .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                                .addGap(20, 20, 20)
+                                .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btn2d)
+                                    .addComponent(btn3d)))
+                            .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                                .addGap(31, 31, 31)
+                                .addComponent(btn4d)))
+                        .addGap(15, 15, 15)
+                        .addComponent(btn5d)
+                        .addGap(47, 47, 47)
+                        .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btn1d)
+                            .addComponent(btn1i))))
+                .addContainerGap(94, Short.MAX_VALUE))
+        );
+
+        btnAceptar.setBackground(new java.awt.Color(255, 153, 0));
+        btnAceptar.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        btnAceptar.setText("Aceptar");
+        btnAceptar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAceptarActionPerformed(evt);
+            }
+        });
+
+        txtNombre.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtNombreKeyReleased(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jpPanelHuellasLayout = new javax.swing.GroupLayout(jpPanelHuellas);
+        jpPanelHuellas.setLayout(jpPanelHuellasLayout);
+        jpPanelHuellasLayout.setHorizontalGroup(
+            jpPanelHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpPanelHuellasLayout.createSequentialGroup()
+                .addContainerGap(57, Short.MAX_VALUE)
+                .addGroup(jpPanelHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbEmpleados, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jpPanelHuellasLayout.createSequentialGroup()
+                        .addGroup(jpPanelHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jpPanelHuellasLayout.createSequentialGroup()
+                                .addComponent(lbEmpleado)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtNombre))
+                            .addGroup(jpPanelHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jpHuellasFondo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnAceptar)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap(57, Short.MAX_VALUE))
+        );
+        jpPanelHuellasLayout.setVerticalGroup(
+            jpPanelHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpPanelHuellasLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jpPanelHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbEmpleado)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbEmpleados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(13, 13, 13)
+                .addComponent(jpHuellasFondo, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26))
+        );
+
+        javax.swing.GroupLayout jpHuellasLayout = new javax.swing.GroupLayout(jpHuellas);
+        jpHuellas.setLayout(jpHuellasLayout);
+        jpHuellasLayout.setHorizontalGroup(
+            jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpHuellasLayout.createSequentialGroup()
+                .addContainerGap(250, Short.MAX_VALUE)
+                .addComponent(jpPanelHuellas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(250, Short.MAX_VALUE))
+        );
+        jpHuellasLayout.setVerticalGroup(
+            jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpHuellasLayout.createSequentialGroup()
+                .addContainerGap(50, Short.MAX_VALUE)
+                .addComponent(jpPanelHuellas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(50, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout jpFondoLayout = new javax.swing.GroupLayout(jpFondo);
         jpFondo.setLayout(jpFondoLayout);
         jpFondoLayout.setHorizontalGroup(
             jpFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1000, Short.MAX_VALUE)
+            .addGroup(jpFondoLayout.createSequentialGroup()
+                .addGroup(jpFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jpLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jpHuellas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0))
         );
         jpFondoLayout.setVerticalGroup(
             jpFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
+            .addGroup(jpFondoLayout.createSequentialGroup()
+                .addComponent(jpLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jpHuellas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout jpSectionLayout = new javax.swing.GroupLayout(jpSection);
@@ -312,6 +608,279 @@ public class Checador extends javax.swing.JApplet {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnAccederActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAccederActionPerformed
+        // TODO add your handling code here:
+        taparTodo();
+        jpFondo.setVisible(true);
+        jpSection.setVisible(true);
+        jpLogin.setVisible(true);
+        
+        ConnectionBD sql = new ConnectionBD();
+        Connection cn = sql.conectar();
+        PreparedStatement consulta;
+        ArrayList<Empleado> admins = new ArrayList<>();
+        try {
+            consulta = cn.prepareStatement("SELECT * FROM admincts WHERE idct = ?");
+            consulta.setInt(1, id_ct);
+            ResultSet resultado = consulta.executeQuery();
+          
+            while(resultado.next()){
+                int id_admin_ct;
+                
+                id_admin_ct = resultado.getInt("idadmin");
+                id_empleado = resultado.getInt("idempleado");
+                
+                AdminCt a = new AdminCt(id_admin_ct, id_empleado, id_ct);
+                consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idempleado = ?");
+                consulta.setInt(1, a.getId_empleado());
+                ResultSet resultadoEmpleados = consulta.executeQuery();
+                
+                while(resultadoEmpleados.next()){
+                    int idEmpleado;
+                    String nombre;
+                    String apPaterno;
+                    String apMaterno;
+                    String rfc;
+                    int idct;
+
+                    idEmpleado = resultadoEmpleados.getInt("idempleado");
+                    nombre = resultadoEmpleados.getString("nombre").trim();
+                    apPaterno = resultadoEmpleados.getString("apPaterno").trim();
+                    apMaterno = resultadoEmpleados.getString("apMaterno").trim();
+                    rfc = resultadoEmpleados.getString("rfc").trim();
+                    idct = resultadoEmpleados.getInt("idct");
+
+
+                    Empleado e = new Empleado(idEmpleado, nombre, apPaterno, apMaterno, rfc, idct);
+                    admins.add(e);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Checador.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        cmbAdmin.removeAllItems();
+        admins.forEach((admin) -> {
+            cmbAdmin.addItem(admin.toString());
+        });
+        adminActivo = true;
+        estaLogin = 1;
+        checar = validarAdmin(0, estaLogin);
+        final Runnable tarea = () -> {
+            checar = validarAdmin(checar, estaLogin);
+        };
+
+        ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
+        timer.scheduleAtFixedRate(tarea, 1, 1, TimeUnit.SECONDS);
+    }//GEN-LAST:event_btnAccederActionPerformed
+
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
+        // TODO add your handling code here:
+        taparTodo();
+        jpSection.setVisible(true);
+        jpChecador.setVisible(true);
+        adminActivo = false;
+    }//GEN-LAST:event_btnRegresarActionPerformed
+
+    private void cbEmpleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbEmpleadosActionPerformed
+        // TODO add your handling code here:
+        if(cbEmpleados.getSelectedIndex() == -1) return;
+        btn1d.setEnabled(true);
+        btn2d.setEnabled(true);
+        btn3d.setEnabled(true);
+        btn4d.setEnabled(true);
+        btn5d.setEnabled(true);
+        btn1i.setEnabled(true);
+        btn2i.setEnabled(true);
+        btn3i.setEnabled(true);
+        btn4i.setEnabled(true);
+        btn5i.setEnabled(true);
+
+        btn1d.setBackground(new Color(240, 240, 240));
+        btn2d.setBackground(new Color(240, 240, 240));
+        btn3d.setBackground(new Color(240, 240, 240));
+        btn4d.setBackground(new Color(240, 240, 240));
+        btn5d.setBackground(new Color(240, 240, 240));
+        btn1i.setBackground(new Color(240, 240, 240));
+        btn2i.setBackground(new Color(240, 240, 240));
+        btn3i.setBackground(new Color(240, 240, 240));
+        btn4i.setBackground(new Color(240, 240, 240));
+        btn5i.setBackground(new Color(240, 240, 240));
+
+        int i = cbEmpleados.getSelectedIndex();
+        Empleado empleado = empleados.get(i);
+        id_empleado = empleado.getIdEmpleado();
+
+        ConnectionBD sql = new ConnectionBD();
+        Connection cn = sql.conectar();
+        PreparedStatement consulta;
+        try {
+            consulta = cn.prepareStatement("SELECT * FROM huella where idempleado = ?");
+            consulta.setInt(1, id_empleado);
+            ResultSet resultado = consulta.executeQuery();
+
+            while(resultado.next()){
+                String d = resultado.getString("dedomano") == null ? "" : resultado.getString("dedomano");
+                switch(d){
+                    case "1d":
+                    btn1d.setEnabled(false);
+                    break;
+                    case "2d":
+                    btn2d.setEnabled(false);
+                    break;
+                    case "3d":
+                    btn3d.setEnabled(false);
+                    break;
+                    case "4d":
+                    btn4d.setEnabled(false);
+                    break;
+                    case "5d":
+                    btn5d.setEnabled(false);
+                    break;
+                    case "1i":
+                    btn1i.setEnabled(false);
+                    break;
+                    case "2i":
+                    btn2i.setEnabled(false);
+                    break;
+                    case "3i":
+                    btn3i.setEnabled(false);
+                    break;
+                    case "4i":
+                    btn4i.setEnabled(false);
+                    break;
+                    case "5i":
+                    btn5i.setEnabled(false);
+                    break;
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_cbEmpleadosActionPerformed
+
+    private void btn1dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1dActionPerformed
+        // TODO add your handling code here:
+        /*if(status) return;
+        ponerInfo();
+        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
+        btn1d.setBackground(Color.red);
+        this.Iniciar();
+        this.startL();
+        dedo = btn1d;*/
+    }//GEN-LAST:event_btn1dActionPerformed
+
+    private void btn2dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2dActionPerformed
+        // TODO add your handling code here:
+        /*if(status) return;
+        ponerInfo();
+        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
+        btn2d.setBackground(Color.red);
+        this.Iniciar();
+        this.startL();
+        dedo = btn2d;*/
+    }//GEN-LAST:event_btn2dActionPerformed
+
+    private void btn3dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3dActionPerformed
+        // TODO add your handling code here:
+        /*if(status) return;
+        ponerInfo();
+        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
+        btn3d.setBackground(Color.red);
+        this.Iniciar();
+        this.startL();
+        dedo = btn3d;*/
+    }//GEN-LAST:event_btn3dActionPerformed
+
+    private void btn4dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4dActionPerformed
+        // TODO add your handling code here:
+        /*if(status) return;
+        ponerInfo();
+        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
+        btn4d.setBackground(Color.red);
+        this.Iniciar();
+        this.startL();
+        dedo = btn4d;*/
+    }//GEN-LAST:event_btn4dActionPerformed
+
+    private void btn5dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5dActionPerformed
+        // TODO add your handling code here:
+        /*if(status) return;
+        ponerInfo();
+        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
+        btn5d.setBackground(Color.red);
+        this.Iniciar();
+        this.startL();
+        dedo = btn5d;*/
+    }//GEN-LAST:event_btn5dActionPerformed
+
+    private void btn5iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5iActionPerformed
+        // TODO add your handling code here:
+        /*if(status) return;
+        ponerInfo();
+        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
+        btn5i.setBackground(Color.red);
+        this.Iniciar();
+        this.startL();
+        dedo = btn5i;*/
+    }//GEN-LAST:event_btn5iActionPerformed
+
+    private void btn4iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4iActionPerformed
+        // TODO add your handling code here:
+        /*if(status) return;
+        ponerInfo();
+        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
+        btn4i.setBackground(Color.red);
+        this.Iniciar();
+        this.startL();
+        dedo = btn4i;*/
+    }//GEN-LAST:event_btn4iActionPerformed
+
+    private void btn3iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3iActionPerformed
+        // TODO add your handling code here:
+        /*if(status) return;
+        ponerInfo();
+        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
+        btn3i.setBackground(Color.red);
+        this.Iniciar();
+        this.startL();
+        dedo = btn3i;*/
+    }//GEN-LAST:event_btn3iActionPerformed
+
+    private void btn2iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2iActionPerformed
+        // TODO add your handling code here:
+        /*if(status) return;
+        ponerInfo();
+        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
+        btn2i.setBackground(Color.red);
+        this.Iniciar();
+        this.startL();
+        dedo = btn2i;*/
+    }//GEN-LAST:event_btn2iActionPerformed
+
+    private void btn1iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1iActionPerformed
+        // TODO add your handling code here:
+        /*if(status) return;
+        ponerInfo();
+        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
+        btn1i.setBackground(Color.red);
+        this.Iniciar();
+        this.startL();
+        dedo = btn1i;*/
+    }//GEN-LAST:event_btn1iActionPerformed
+
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        // TODO add your handling code here:
+        this.stop();
+        super.stop();
+        System.exit(0);
+    }//GEN-LAST:event_btnAceptarActionPerformed
+
+    private void txtNombreKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNombreKeyReleased
+        // TODO add your handling code here:
+        cargarEmpleados(txtNombre.getText());
+    }//GEN-LAST:event_txtNombreKeyReleased
     
     private void hora(){
         calendario = new GregorianCalendar();
@@ -351,8 +920,6 @@ public class Checador extends javax.swing.JApplet {
     private void validarActivo(){
        
         Boolean activo = dp.getActivo();
-        System.out.println("activo = " + activo);
-        System.out.println("dp.getActivo() = " + dp.getActivo());
         if(activo && !adminActivo){
             try{
                 ConnectionBD sql = new ConnectionBD();
@@ -845,17 +1412,146 @@ public class Checador extends javax.swing.JApplet {
         return mes_aux;
     }
     
+    private void taparTodo(){
+        dp.stop();
+        jpChecador.setVisible(false);
+        jpFondo.setVisible(false);
+        jpSection.setVisible(false);
+        jpHuellas.setVisible(false);
+        jpLogin.setVisible(false);
+        dp.start();
+    }
+    
+    private int validarAdmin(int checar, int el){
+        Boolean activo = dp.getActivo();
+        
+        
+        System.out.println("el = " + el);
+        
+        if(el == 0) return 0;
+        System.out.println("adminActivo = " + adminActivo);
+        if(activo && adminActivo){
+            try{
+                ConnectionBD sql = new ConnectionBD();   
+                Connection cn = sql.conectar();
+                PreparedStatement consulta;
+                consulta = cn.prepareStatement("SELECT * FROM huella");
+                ResultSet resultado = consulta.executeQuery();
+                
+                while(resultado.next()){
+                    byte templateBuffer[] = resultado.getBytes("huella");
+                    if(dp.verificarHuella(templateBuffer)){
+                        checar++;
+                        cuentaActiva = true;
+                        
+                        
+                        status = false;
+                        estaLogin = 0;
+                        taparTodo();
+                        jpSection.setVisible(true);
+                        jpFondo.setVisible(true);
+                        jpHuellas.setVisible(true);
+                        huellas();
+                    }                    
+                }
+                if(checar == 0 && activo){
+                    dp.setActivo(false);
+                    dp.clear();
+                    System.out.println("checar = " + checar);
+                    JOptionPane.showOptionDialog(null, "Acceso denegado", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
+                }
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(Checador.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return checar;
+    }
+    
+    private void huellas(){
+        btnAceptar.setBackground(new Color(240, 60, 80));
+        btnAceptar.setForeground(Color.white);
+
+        Imagen i = new Imagen("com/ieepo/images/u123.png", jpHuellasFondo.getSize().width, jpHuellasFondo.getSize().height);
+        jpHuellasFondo.add(i);
+        jpHuellasFondo.repaint();
+        cargarEmpleados("");
+    }
+    
+    private void cargarEmpleados(String cadena){
+        ConnectionBD sql = new ConnectionBD();
+        Connection cn = sql.conectar();
+        PreparedStatement consulta;
+        try {
+            consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idct = ? and (nombre LIKE ? or appaterno LIKE ? or apmaterno LIKE ?) ORDER BY nombre");
+            consulta.setInt(1, id_ct);
+            consulta.setString(2, "%" + cadena + "%");
+            consulta.setString(3, "%" + cadena + "%");
+            consulta.setString(4, "%" + cadena + "%");
+            ResultSet resultado = consulta.executeQuery();
+                        
+            empleados = new ArrayList<>();
+            while(resultado.next()){
+                int idEmpleado;
+                String nombre;
+                String apPaterno;
+                String apMaterno;
+                String rfc;
+                int idct;
+                
+                idEmpleado = resultado.getInt("idempleado");
+                nombre = resultado.getString("nombre").trim();
+                apPaterno = resultado.getString("apPaterno").trim();
+                apMaterno = resultado.getString("apMaterno").trim();
+                rfc = resultado.getString("rfc").trim();
+                idct = resultado.getInt("idct");
+                
+                
+                Empleado e = new Empleado(idEmpleado, nombre, apPaterno, apMaterno, rfc, idct);
+                empleados.add(e);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        cbEmpleados.removeAllItems();
+        
+        empleados.forEach((Empleado empleado) -> {
+            cbEmpleados.addItem(empleado.toString());
+        });
+    }
+   
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn1d;
+    private javax.swing.JButton btn1i;
+    private javax.swing.JButton btn2d;
+    private javax.swing.JButton btn2i;
+    private javax.swing.JButton btn3d;
+    private javax.swing.JButton btn3i;
+    private javax.swing.JButton btn4d;
+    private javax.swing.JButton btn4i;
+    private javax.swing.JButton btn5d;
+    private javax.swing.JButton btn5i;
     private javax.swing.JButton btnAcceder;
+    private javax.swing.JButton btnAceptar;
+    private javax.swing.JButton btnRegresar;
+    private javax.swing.JComboBox<String> cbEmpleados;
+    private javax.swing.JComboBox<String> cmbAdmin;
     private org.jdesktop.swingx.JXPanel jXPanel1;
     private org.jdesktop.swingx.JXPanel jpChecador;
     private org.jdesktop.swingx.JXPanel jpFondo;
+    private org.jdesktop.swingx.JXPanel jpHuellas;
+    private javax.swing.JPanel jpHuellasFondo;
+    private org.jdesktop.swingx.JXPanel jpLogin;
     private org.jdesktop.swingx.JXPanel jpLogo;
     private org.jdesktop.swingx.JXPanel jpLogoPng;
+    private javax.swing.JPanel jpPanelHuellas;
     private org.jdesktop.swingx.JXPanel jpSection;
     private org.jdesktop.swingx.JXLabel lbDia;
+    private javax.swing.JLabel lbEmpleado;
     private org.jdesktop.swingx.JXLabel lbHora;
     private org.jdesktop.swingx.JXLabel lbMes;
+    private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
 }
