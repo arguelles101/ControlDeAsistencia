@@ -5,6 +5,7 @@
  */
 package com.ieepo.checador;
 
+import static com.digitalpersona.onetouch.processing.DPFPTemplateStatus.TEMPLATE_STATUS_READY;
 import com.ieepo.checador.components.Imagen;
 import com.ieepo.checador.db.ConnectionBD;
 import com.ieepo.checador.model.AdminCt;
@@ -16,6 +17,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -55,7 +57,10 @@ public class Checador extends javax.swing.JApplet {
     
     TimerTask task;
     TimerTask taskHuellas;
+    Runnable tareaLogin;
+    ScheduledExecutorService timerLogin;
     
+    ArrayList<Empleado> admins;
     Boolean adminActivo = false;
     Boolean cuentaActiva = false;
     int checar;
@@ -65,6 +70,7 @@ public class Checador extends javax.swing.JApplet {
     int id_empleado;
     private Boolean status; //Variable para saber si se esta utilizando el dispositivo en algun dedo
     JButton dedo;
+    Boolean ponerAlert;
     
     /**
      * Initializes the applet Checador
@@ -168,6 +174,7 @@ public class Checador extends javax.swing.JApplet {
         btn1i = new javax.swing.JButton();
         btnAceptar = new javax.swing.JButton();
         txtNombre = new javax.swing.JTextField();
+        btnCerrarSesion = new javax.swing.JButton();
 
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setMinimumSize(new java.awt.Dimension(400, 200));
@@ -322,7 +329,7 @@ public class Checador extends javax.swing.JApplet {
                 .addContainerGap(387, Short.MAX_VALUE))
         );
 
-        jpHuellas.setBackground(new java.awt.Color(255, 153, 153));
+        jpHuellas.setBackground(new java.awt.Color(255, 255, 255));
         jpHuellas.setPreferredSize(new java.awt.Dimension(1000, 500));
 
         jpPanelHuellas.setBackground(new java.awt.Color(255, 255, 255));
@@ -535,14 +542,24 @@ public class Checador extends javax.swing.JApplet {
                 .addGap(26, 26, 26))
         );
 
+        btnCerrarSesion.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        btnCerrarSesion.setText("Cerrar sesion");
+        btnCerrarSesion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCerrarSesionActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jpHuellasLayout = new javax.swing.GroupLayout(jpHuellas);
         jpHuellas.setLayout(jpHuellasLayout);
         jpHuellasLayout.setHorizontalGroup(
             jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpHuellasLayout.createSequentialGroup()
-                .addContainerGap(250, Short.MAX_VALUE)
+                .addContainerGap(203, Short.MAX_VALUE)
                 .addComponent(jpPanelHuellas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(250, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
+                .addComponent(btnCerrarSesion)
+                .addGap(125, 125, 125))
         );
         jpHuellasLayout.setVerticalGroup(
             jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -550,6 +567,10 @@ public class Checador extends javax.swing.JApplet {
                 .addContainerGap(50, Short.MAX_VALUE)
                 .addComponent(jpPanelHuellas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(50, Short.MAX_VALUE))
+            .addGroup(jpHuellasLayout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addComponent(btnCerrarSesion)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jpFondoLayout = new javax.swing.GroupLayout(jpFondo);
@@ -611,6 +632,8 @@ public class Checador extends javax.swing.JApplet {
 
     private void btnAccederActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAccederActionPerformed
         // TODO add your handling code here:
+        
+        System.out.println("entra aqui primero");
         taparTodo();
         jpFondo.setVisible(true);
         jpSection.setVisible(true);
@@ -619,7 +642,7 @@ public class Checador extends javax.swing.JApplet {
         ConnectionBD sql = new ConnectionBD();
         Connection cn = sql.conectar();
         PreparedStatement consulta;
-        ArrayList<Empleado> admins = new ArrayList<>();
+        admins = new ArrayList<>();
         try {
             consulta = cn.prepareStatement("SELECT * FROM admincts WHERE idct = ?");
             consulta.setInt(1, id_ct);
@@ -666,12 +689,12 @@ public class Checador extends javax.swing.JApplet {
         adminActivo = true;
         estaLogin = 1;
         checar = validarAdmin(0, estaLogin);
-        final Runnable tarea = () -> {
+        tareaLogin = () -> {
             checar = validarAdmin(checar, estaLogin);
         };
 
-        ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
-        timer.scheduleAtFixedRate(tarea, 1, 1, TimeUnit.SECONDS);
+        timerLogin = Executors.newSingleThreadScheduledExecutor();
+        timerLogin.scheduleAtFixedRate(tareaLogin, 1, 1, TimeUnit.SECONDS);
     }//GEN-LAST:event_btnAccederActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
@@ -762,13 +785,11 @@ public class Checador extends javax.swing.JApplet {
 
     private void btn1dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1dActionPerformed
         // TODO add your handling code here:
-        /*if(status) return;
+        if(status) return;
         ponerInfo();
-        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
         btn1d.setBackground(Color.red);
-        this.Iniciar();
-        this.startL();
-        dedo = btn1d;*/
+        dedo = btn1d;
+        guardarHuella();
     }//GEN-LAST:event_btn1dActionPerformed
 
     private void btn2dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2dActionPerformed
@@ -881,6 +902,14 @@ public class Checador extends javax.swing.JApplet {
         // TODO add your handling code here:
         cargarEmpleados(txtNombre.getText());
     }//GEN-LAST:event_txtNombreKeyReleased
+
+    private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
+        // TODO add your handling code here:
+        taparTodo();
+        jpSection.setVisible(true);
+        jpChecador.setVisible(true);
+        adminActivo = false;
+    }//GEN-LAST:event_btnCerrarSesionActionPerformed
     
     private void hora(){
         calendario = new GregorianCalendar();
@@ -1413,38 +1442,34 @@ public class Checador extends javax.swing.JApplet {
     }
     
     private void taparTodo(){
-        dp.stop();
         jpChecador.setVisible(false);
         jpFondo.setVisible(false);
         jpSection.setVisible(false);
         jpHuellas.setVisible(false);
         jpLogin.setVisible(false);
-        dp.start();
+        dp.clear();
     }
     
     private int validarAdmin(int checar, int el){
         Boolean activo = dp.getActivo();
-        
-        
-        System.out.println("el = " + el);
-        
         if(el == 0) return 0;
-        System.out.println("adminActivo = " + adminActivo);
         if(activo && adminActivo){
             try{
                 ConnectionBD sql = new ConnectionBD();   
                 Connection cn = sql.conectar();
                 PreparedStatement consulta;
-                consulta = cn.prepareStatement("SELECT * FROM huella");
+                int aux_id_empleado = admins.get(cmbAdmin.getSelectedIndex()).getIdEmpleado();
+                consulta = cn.prepareStatement("SELECT * FROM huella WHERE idempleado = ?");
+                consulta.setInt(1, aux_id_empleado);
                 ResultSet resultado = consulta.executeQuery();
+                System.out.println("aux_id_empleado = " + aux_id_empleado);
                 
                 while(resultado.next()){
                     byte templateBuffer[] = resultado.getBytes("huella");
                     if(dp.verificarHuella(templateBuffer)){
                         checar++;
                         cuentaActiva = true;
-                        
-                        
+                        timerLogin.shutdown();
                         status = false;
                         estaLogin = 0;
                         taparTodo();
@@ -1454,6 +1479,8 @@ public class Checador extends javax.swing.JApplet {
                         huellas();
                     }                    
                 }
+                System.out.println("checar = " + checar);
+                System.out.println("activo = " + activo);
                 if(checar == 0 && activo){
                     dp.setActivo(false);
                     dp.clear();
@@ -1467,7 +1494,7 @@ public class Checador extends javax.swing.JApplet {
         }
         return checar;
     }
-    
+
     private void huellas(){
         btnAceptar.setBackground(new Color(240, 60, 80));
         btnAceptar.setForeground(Color.white);
@@ -1521,6 +1548,81 @@ public class Checador extends javax.swing.JApplet {
         });
     }
    
+    private void ponerInfo(){
+        int i = cbEmpleados.getSelectedIndex();
+        Empleado empleado = empleados.get(i);
+        id_empleado = empleado.getIdEmpleado();
+        status = true;
+    }
+    
+    private void guardarHuella(){
+        Timer tiempo;
+        dp.stop();
+        dp.start();
+        
+        tiempo = new Timer();
+        taskHuellas = new TimerTask() {
+            int contador=1;
+            @Override
+            public void run() {
+                //contador++;
+                if(dp.Reclutador.getFeaturesNeeded() == 4 && contador == 1){
+                    JOptionPane.showMessageDialog(null, "Ponga su dedo en el dispositivo", "", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("aqui 1");
+                    contador++;
+                }
+                if(dp.Reclutador.getFeaturesNeeded() == 3 && contador == 2){
+                    JOptionPane.showMessageDialog(null, "Una vez mas por favor!", "", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("aqui 2");
+                    contador++;
+                }
+                if(dp.Reclutador.getFeaturesNeeded() == 2 && contador == 3){
+                    JOptionPane.showMessageDialog(null, "Otra vez por favor", "", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("aqui 3");
+                    contador++;
+                }
+                if(dp.Reclutador.getFeaturesNeeded() == 1 && contador == 4){
+                    JOptionPane.showMessageDialog(null, "La ultima vez, ponga su dedo en el dispositivo!!", "", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("aqui 4");
+                    contador++;
+                }
+                if(dp.Reclutador.getFeaturesNeeded() == 0 && contador == 5){
+                    JOptionPane.showMessageDialog(null, "Listo huella guardada", "", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("aqui 5");
+                    contador++;
+                }
+                if(dp.estadoHuellas() == TEMPLATE_STATUS_READY){
+                    try {
+                        ByteArrayInputStream datosHuella = new ByteArrayInputStream(dp.getTemplate().serialize());
+                        Integer tamanioHuella=dp.getTemplate().serialize().length;
+                        
+                        ConnectionBD sql = new ConnectionBD();
+                        Connection cn = sql.conectar();
+                        String d = dedo.getText();
+                        PreparedStatement ps = cn.prepareStatement("INSERT INTO huella(idempleado, huella, dedomano) VALUES (?,?, ?)");
+                        ps.setInt(1, id_empleado); ///////////////////////////////////////////////////////////////////////// id_empleado
+                        ps.setBinaryStream(2, datosHuella,tamanioHuella);
+                        ps.setString(3, d);
+
+                        ps.executeUpdate();
+                        
+                        JButton j = dedo;
+                        j.setBackground(Color.green);
+                        j.setEnabled(false);
+                        j.setBackground(Color.green);
+                        dp.stop();
+                        dp.clear();
+                        dp.stop();
+                        status = false; 
+                        taskHuellas.cancel();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(Checador.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }    
+        };        
+        tiempo.schedule(taskHuellas,0,1000);
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn1d;
@@ -1535,6 +1637,7 @@ public class Checador extends javax.swing.JApplet {
     private javax.swing.JButton btn5i;
     private javax.swing.JButton btnAcceder;
     private javax.swing.JButton btnAceptar;
+    private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JButton btnRegresar;
     private javax.swing.JComboBox<String> cbEmpleados;
     private javax.swing.JComboBox<String> cmbAdmin;

@@ -34,7 +34,7 @@ import javax.swing.SwingUtilities;
  */
 public class DigitalPersona {
     private final DPFPCapture Lector = DPFPGlobal.getCaptureFactory().createCapture();
-    private final DPFPEnrollment Reclutador = DPFPGlobal.getEnrollmentFactory().createEnrollment();
+    public final DPFPEnrollment Reclutador = DPFPGlobal.getEnrollmentFactory().createEnrollment();
     private final DPFPVerification Verificador = DPFPGlobal.getVerificationFactory().createVerification();
     private DPFPTemplate template;
     public static String TEMPLATE_PROPERTY = "template";
@@ -45,7 +45,6 @@ public class DigitalPersona {
     private Boolean activo;
 
     public DigitalPersona() {
-        System.out.println("No mms");
         this.activo = false;
     }
     
