@@ -794,101 +794,83 @@ public class Checador extends javax.swing.JApplet {
 
     private void btn2dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2dActionPerformed
         // TODO add your handling code here:
-        /*if(status) return;
+        if(status) return;
         ponerInfo();
-        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
         btn2d.setBackground(Color.red);
-        this.Iniciar();
-        this.startL();
-        dedo = btn2d;*/
+        dedo = btn2d;
+        guardarHuella();
     }//GEN-LAST:event_btn2dActionPerformed
 
     private void btn3dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3dActionPerformed
         // TODO add your handling code here:
-        /*if(status) return;
+        if(status) return;
         ponerInfo();
-        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
         btn3d.setBackground(Color.red);
-        this.Iniciar();
-        this.startL();
-        dedo = btn3d;*/
+        dedo = btn3d;
+        guardarHuella();
     }//GEN-LAST:event_btn3dActionPerformed
 
     private void btn4dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4dActionPerformed
         // TODO add your handling code here:
-        /*if(status) return;
+        if(status) return;
         ponerInfo();
-        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
         btn4d.setBackground(Color.red);
-        this.Iniciar();
-        this.startL();
-        dedo = btn4d;*/
+        dedo = btn4d;
+        guardarHuella();
     }//GEN-LAST:event_btn4dActionPerformed
 
     private void btn5dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5dActionPerformed
         // TODO add your handling code here:
-        /*if(status) return;
+        if(status) return;
         ponerInfo();
-        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
         btn5d.setBackground(Color.red);
-        this.Iniciar();
-        this.startL();
-        dedo = btn5d;*/
+        dedo = btn5d;
+        guardarHuella();
     }//GEN-LAST:event_btn5dActionPerformed
 
     private void btn5iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5iActionPerformed
         // TODO add your handling code here:
-        /*if(status) return;
+        if(status) return;
         ponerInfo();
-        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
         btn5i.setBackground(Color.red);
-        this.Iniciar();
-        this.startL();
-        dedo = btn5i;*/
+        dedo = btn5i;
+        guardarHuella();
     }//GEN-LAST:event_btn5iActionPerformed
 
     private void btn4iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4iActionPerformed
         // TODO add your handling code here:
-        /*if(status) return;
+        if(status) return;
         ponerInfo();
-        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
         btn4i.setBackground(Color.red);
-        this.Iniciar();
-        this.startL();
-        dedo = btn4i;*/
+        dedo = btn4i;
+        guardarHuella();
     }//GEN-LAST:event_btn4iActionPerformed
 
     private void btn3iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3iActionPerformed
         // TODO add your handling code here:
-        /*if(status) return;
+        if(status) return;
         ponerInfo();
-        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
         btn3i.setBackground(Color.red);
-        this.Iniciar();
-        this.startL();
-        dedo = btn3i;*/
+        dedo = btn3i;
+        guardarHuella();
     }//GEN-LAST:event_btn3iActionPerformed
 
     private void btn2iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2iActionPerformed
         // TODO add your handling code here:
-        /*if(status) return;
+        if(status) return;
         ponerInfo();
-        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
         btn2i.setBackground(Color.red);
-        this.Iniciar();
-        this.startL();
-        dedo = btn2i;*/
+        dedo = btn2i;
+        guardarHuella();
     }//GEN-LAST:event_btn2iActionPerformed
 
     private void btn1iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1iActionPerformed
         // TODO add your handling code here:
-        /*if(status) return;
+        if(status) return;
         ponerInfo();
-        JOptionPane.showMessageDialog(Huellas.this, "Ponga su dedo sobre el dispositivo", "Inscripcion de Huellas Dactilares", JOptionPane.INFORMATION_MESSAGE);
         btn1i.setBackground(Color.red);
-        this.Iniciar();
-        this.startL();
-        dedo = btn1i;*/
+        dedo = btn1i;
+        guardarHuella();
     }//GEN-LAST:event_btn1iActionPerformed
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
