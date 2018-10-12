@@ -39,6 +39,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import java.security.*;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -133,7 +135,58 @@ public class Checador extends javax.swing.JApplet {
         
         //</editor-fold>
        
-    }
+    }   
+    
+    /*@Override
+    public void  init(){ 
+        AccessController.doPrivileged((PrivilegedAction) () -> {
+            try{
+                // Código del método INIT
+                initComponents();
+                setSize(new Dimension(1000, 700));
+                setMinimumSize(new Dimension(800, 500));
+                
+                jpFondo.setVisible(false);
+                
+                Imagen i = new Imagen("com/ieepo/images/logo.png", (int)(jpLogo.getPreferredSize().width*0.4), jpLogoPng.getPreferredSize().height);
+                jpLogoPng.add(i);
+                jpLogoPng.repaint();
+                
+                dp = new DigitalPersona();
+                dp.Iniciar();
+                dp.start();
+                
+                
+                
+                hora();
+                final Runnable tarea = () -> {
+                    hora();
+                };
+                
+                ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
+                timer.scheduleAtFixedRate(tarea, 1, 1, TimeUnit.SECONDS);
+                
+                String property = System.getProperty("java.library.path");
+                StringTokenizer parser = new StringTokenizer(property, ";");
+                while (parser.hasMoreTokens()) {
+                    System.err.println(parser.nextToken());
+                }
+                
+                
+            }
+            catch(Exception e){
+                Logger.getLogger(Checador.class.getName()).log(Level.SEVERE, null, e);
+            }
+            return null;
+        });
+    }*/
+
+
+ 
+
+
+ 
+    
 
     /**
      * This method is called from within the init() method to initialize the
@@ -642,6 +695,7 @@ public class Checador extends javax.swing.JApplet {
         ConnectionBD sql = new ConnectionBD();
         Connection cn = sql.conectar();
         PreparedStatement consulta;
+        System.out.println("cn = " + cn);
         admins = new ArrayList<>();
         try {
             consulta = cn.prepareStatement("SELECT * FROM admincts WHERE idct = ?");
@@ -785,6 +839,7 @@ public class Checador extends javax.swing.JApplet {
 
     private void btn1dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1dActionPerformed
         // TODO add your handling code here:
+        System.out.println("status = " + status);
         if(status) return;
         ponerInfo();
         btn1d.setBackground(Color.red);
@@ -929,8 +984,10 @@ public class Checador extends javax.swing.JApplet {
     }
     
     private void validarActivo(){
-       
+        
         Boolean activo = dp.getActivo();
+        System.out.println("activo = " + activo);
+        System.out.println("adminActivo = " + adminActivo);
         if(activo && !adminActivo){
             try{
                 ConnectionBD sql = new ConnectionBD();
@@ -1429,7 +1486,7 @@ public class Checador extends javax.swing.JApplet {
         jpSection.setVisible(false);
         jpHuellas.setVisible(false);
         jpLogin.setVisible(false);
-        dp.clear();
+        //dp.clear();
     }
     
     private int validarAdmin(int checar, int el){
@@ -1539,15 +1596,15 @@ public class Checador extends javax.swing.JApplet {
     
     private void guardarHuella(){
         Timer tiempo;
-        dp.stop();
-        dp.start();
-        
+        dp.clear();
+        System.out.println("aqui");
         tiempo = new Timer();
         taskHuellas = new TimerTask() {
             int contador=1;
             @Override
             public void run() {
                 //contador++;
+                System.out.println("aqui");
                 if(dp.Reclutador.getFeaturesNeeded() == 4 && contador == 1){
                     JOptionPane.showMessageDialog(null, "Ponga su dedo en el dispositivo", "", JOptionPane.INFORMATION_MESSAGE);
                     System.out.println("aqui 1");

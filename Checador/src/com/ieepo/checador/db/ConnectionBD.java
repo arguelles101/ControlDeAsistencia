@@ -8,6 +8,8 @@ package com.ieepo.checador.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,13 +38,20 @@ public class ConnectionBD {
         
         System.out.println("Conectando...");
         try{
+    //        Class.forName("com.mysql.jdbc.Driver");
+              Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(url, user,pass);
             System.out.println("Conectado");
             return conn;
         }catch(SQLException e){
             System.out.println("mensaje");
+            System.out.println("e = " + e);
             System.out.println(e.getMessage());
-        }
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Exception");
+            System.out.println("ex = " + ex);
+             Logger.getLogger(ConnectionBD.class.getName()).log(Level.SEVERE, null, ex);
+         }
         return null;
     }
     
