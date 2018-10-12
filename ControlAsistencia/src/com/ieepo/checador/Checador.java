@@ -5,13 +5,16 @@
  */
 package com.ieepo.checador;
 
+import static com.digitalpersona.onetouch.processing.DPFPTemplateStatus.TEMPLATE_STATUS_READY;
 import com.ieepo.checador.components.Imagen;
 import com.ieepo.checador.db.ConnectionBD;
 import com.ieepo.checador.model.AdminCt;
 import com.ieepo.checador.model.Empleado;
 import com.ieepo.checador.model.Horario;
 import com.ieepo.checador.model.HorarioEmpleado;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,12 +27,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 /**
@@ -62,6 +67,9 @@ public class Checador extends javax.swing.JApplet {
 
     ArrayList<Empleado> empleados;
     int id_empleado;
+    private Boolean status; //Variable para saber si se esta utilizando el dispositivo en algun dedo
+    JButton dedo;
+    ///Boolean ponerAlert;
 
     /**
      * Initializes the applet Checador
@@ -159,7 +167,23 @@ public class Checador extends javax.swing.JApplet {
         jpLogin = new org.jdesktop.swingx.JXPanel();
         lbAdmin = new org.jdesktop.swingx.JXLabel();
         cmbAdmin = new javax.swing.JComboBox<>();
+        lbRegresar = new org.jdesktop.swingx.JXLabel();
         jpHuellas = new org.jdesktop.swingx.JXPanel();
+        lbCerrarSesion = new org.jdesktop.swingx.JXLabel();
+        jpHuellasFondo = new org.jdesktop.swingx.JXPanel();
+        btn2d = new javax.swing.JButton();
+        btn1d = new javax.swing.JButton();
+        btn3d = new javax.swing.JButton();
+        btn4d = new javax.swing.JButton();
+        btn5d = new javax.swing.JButton();
+        btn1i = new javax.swing.JButton();
+        btn2i = new javax.swing.JButton();
+        btn5i = new javax.swing.JButton();
+        btn4i = new javax.swing.JButton();
+        btn3i = new javax.swing.JButton();
+        lbSelEmp = new org.jdesktop.swingx.JXLabel();
+        txtEmpleado = new javax.swing.JTextField();
+        cmbEmpleados = new javax.swing.JComboBox<>();
 
         Acceder.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         Acceder.setText("Acceder");
@@ -423,44 +447,210 @@ public class Checador extends javax.swing.JApplet {
         jpLogin.setPreferredSize(new java.awt.Dimension(1000, 500));
 
         lbAdmin.setText("Seleccione al administrador:");
+        lbAdmin.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
 
-        cmbAdmin.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        cmbAdmin.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        cmbAdmin.setForeground(new java.awt.Color(51, 153, 255));
         cmbAdmin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cmbAdmin.setPreferredSize(new java.awt.Dimension(350, 40));
+        cmbAdmin.setPreferredSize(new java.awt.Dimension(400, 40));
+
+        lbRegresar.setText("Regresar");
+        lbRegresar.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        lbRegresar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbRegresarMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jpLoginLayout = new javax.swing.GroupLayout(jpLogin);
         jpLogin.setLayout(jpLoginLayout);
         jpLoginLayout.setHorizontalGroup(
             jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpLoginLayout.createSequentialGroup()
-                .addContainerGap(325, Short.MAX_VALUE)
+                .addContainerGap(300, Short.MAX_VALUE)
                 .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cmbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(325, Short.MAX_VALUE))
+                .addContainerGap(300, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpLoginLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lbRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(129, 129, 129))
         );
         jpLoginLayout.setVerticalGroup(
             jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpLoginLayout.createSequentialGroup()
-                .addGap(166, 166, 166)
+                .addGap(36, 36, 36)
+                .addComponent(lbRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(117, 117, 117)
                 .addComponent(lbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(cmbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(269, Short.MAX_VALUE))
+                .addContainerGap(262, Short.MAX_VALUE))
         );
 
-        jpHuellas.setBackground(new java.awt.Color(255, 153, 153));
+        jpHuellas.setBackground(new java.awt.Color(255, 255, 255));
         jpHuellas.setPreferredSize(new java.awt.Dimension(1000, 500));
+
+        lbCerrarSesion.setText("Cerrar sesion");
+        lbCerrarSesion.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        lbCerrarSesion.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbCerrarSesionMouseClicked(evt);
+            }
+        });
+
+        jpHuellasFondo.setBackground(new java.awt.Color(255, 255, 255));
+        jpHuellasFondo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jpHuellasFondo.setPreferredSize(new java.awt.Dimension(400, 300));
+
+        btn2d.setText("2d");
+        btn2d.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn2dActionPerformed(evt);
+            }
+        });
+
+        btn1d.setText("1d");
+        btn1d.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn1dActionPerformed(evt);
+            }
+        });
+
+        btn3d.setText("3d");
+        btn3d.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn3dActionPerformed(evt);
+            }
+        });
+
+        btn4d.setText("4d");
+
+        btn5d.setText("5d");
+
+        btn1i.setText("1i");
+
+        btn2i.setText("2i");
+
+        btn5i.setText("5i");
+
+        btn4i.setText("4i");
+
+        btn3i.setText("3i");
+
+        javax.swing.GroupLayout jpHuellasFondoLayout = new javax.swing.GroupLayout(jpHuellasFondo);
+        jpHuellasFondo.setLayout(jpHuellasFondoLayout);
+        jpHuellasFondoLayout.setHorizontalGroup(
+            jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                .addGap(150, 150, 150)
+                .addComponent(btn1i)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn1d)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btn5i)
+                    .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addComponent(btn4i)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn3i)
+                        .addGap(3, 3, 3)
+                        .addComponent(btn2i)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
+                .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btn5d, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpHuellasFondoLayout.createSequentialGroup()
+                        .addComponent(btn2d)
+                        .addGap(5, 5, 5)
+                        .addComponent(btn3d)
+                        .addGap(5, 5, 5)
+                        .addComponent(btn4d)
+                        .addGap(22, 22, 22))))
+        );
+        jpHuellasFondoLayout.setVerticalGroup(
+            jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpHuellasFondoLayout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                        .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btn3i)
+                            .addGroup(jpHuellasFondoLayout.createSequentialGroup()
+                                .addGap(15, 15, 15)
+                                .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btn2i)
+                                    .addComponent(btn4i))))
+                        .addGap(18, 18, 18)
+                        .addComponent(btn5i))
+                    .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpHuellasFondoLayout.createSequentialGroup()
+                            .addComponent(btn4d)
+                            .addGap(18, 18, 18)
+                            .addComponent(btn5d))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpHuellasFondoLayout.createSequentialGroup()
+                            .addComponent(btn2d)
+                            .addGap(46, 46, 46))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpHuellasFondoLayout.createSequentialGroup()
+                            .addComponent(btn3d)
+                            .addGap(56, 56, 56))))
+                .addGap(55, 55, 55)
+                .addGroup(jpHuellasFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn1d)
+                    .addComponent(btn1i))
+                .addGap(140, 140, 140))
+        );
+
+        lbSelEmp.setText("Selecione el empleado:");
+
+        txtEmpleado.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtEmpleadoKeyReleased(evt);
+            }
+        });
+
+        cmbEmpleados.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbEmpleados.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbEmpleadosItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jpHuellasLayout = new javax.swing.GroupLayout(jpHuellas);
         jpHuellas.setLayout(jpHuellasLayout);
         jpHuellasLayout.setHorizontalGroup(
             jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1000, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpHuellasLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lbCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(129, 129, 129))
+            .addGroup(jpHuellasLayout.createSequentialGroup()
+                .addContainerGap(300, Short.MAX_VALUE)
+                .addGroup(jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jpHuellasLayout.createSequentialGroup()
+                        .addComponent(lbSelEmp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtEmpleado))
+                    .addComponent(cmbEmpleados, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jpHuellasFondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(300, Short.MAX_VALUE))
         );
         jpHuellasLayout.setVerticalGroup(
             jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
+            .addGroup(jpHuellasLayout.createSequentialGroup()
+                .addGap(36, 36, 36)
+                .addComponent(lbCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(9, 9, 9)
+                .addGroup(jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbSelEmp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cmbEmpleados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25)
+                .addComponent(jpHuellasFondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(62, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jpFondoLayout = new javax.swing.GroupLayout(jpFondo);
@@ -497,8 +687,7 @@ public class Checador extends javax.swing.JApplet {
             .addGroup(jpSectionLayout.createSequentialGroup()
                 .addComponent(jpChecador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jpFondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jpFondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -597,6 +786,142 @@ public class Checador extends javax.swing.JApplet {
 
 
     }//GEN-LAST:event_AccederActionPerformed
+
+    private void lbRegresarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbRegresarMouseClicked
+        // TODO add your handling code here:
+        taparTodo();
+        jpSection.setVisible(true);
+        jpChecador.setVisible(true);
+        adminActivo = false;
+        dp.clear();
+    }//GEN-LAST:event_lbRegresarMouseClicked
+
+    private void lbCerrarSesionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbCerrarSesionMouseClicked
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        taparTodo();
+        jpSection.setVisible(true);
+        jpChecador.setVisible(true);
+        adminActivo = false;
+        dp.clear();
+    }//GEN-LAST:event_lbCerrarSesionMouseClicked
+
+    private void txtEmpleadoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtEmpleadoKeyReleased
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == 10) return;
+        cargarEmpleados(txtEmpleado.getText());
+    }//GEN-LAST:event_txtEmpleadoKeyReleased
+
+    private void btn1dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1dActionPerformed
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        ponerInfo();
+        btn1d.setBackground(Color.red);
+        dedo = btn1d;
+        guardarHuella();
+    }//GEN-LAST:event_btn1dActionPerformed
+
+    private void cmbEmpleadosItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbEmpleadosItemStateChanged
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        if(cmbEmpleados.getSelectedIndex() == -1) return;
+        btn1d.setEnabled(true);
+        btn2d.setEnabled(true);
+        btn3d.setEnabled(true);
+        btn4d.setEnabled(true);
+        btn5d.setEnabled(true);
+        btn1i.setEnabled(true);
+        btn2i.setEnabled(true);
+        btn3i.setEnabled(true);
+        btn4i.setEnabled(true);
+        btn5i.setEnabled(true);
+
+        btn1d.setBackground(new Color(240, 240, 240));
+        btn2d.setBackground(new Color(240, 240, 240));
+        btn3d.setBackground(new Color(240, 240, 240));
+        btn4d.setBackground(new Color(240, 240, 240));
+        btn5d.setBackground(new Color(240, 240, 240));
+        btn1i.setBackground(new Color(240, 240, 240));
+        btn2i.setBackground(new Color(240, 240, 240));
+        btn3i.setBackground(new Color(240, 240, 240));
+        btn4i.setBackground(new Color(240, 240, 240));
+        btn5i.setBackground(new Color(240, 240, 240));
+
+        int i = cmbEmpleados.getSelectedIndex();
+        Empleado empleado = empleados.get(i);
+        id_empleado = empleado.getIdEmpleado();
+
+        ConnectionBD sql = new ConnectionBD();
+        Connection cn = sql.conectar();
+        PreparedStatement consulta;
+        try {
+            consulta = cn.prepareStatement("SELECT * FROM huella where idempleado = ?");
+            consulta.setInt(1, id_empleado);
+            ResultSet resultado = consulta.executeQuery();
+
+            while(resultado.next()){
+                String d = resultado.getString("dedomano") == null ? "" : resultado.getString("dedomano");
+                switch(d){
+                    case "1d":
+                    btn1d.setEnabled(false);
+                    break;
+                    case "2d":
+                    btn2d.setEnabled(false);
+                    break;
+                    case "3d":
+                    btn3d.setEnabled(false);
+                    break;
+                    case "4d":
+                    btn4d.setEnabled(false);
+                    break;
+                    case "5d":
+                    btn5d.setEnabled(false);
+                    break;
+                    case "1i":
+                    btn1i.setEnabled(false);
+                    break;
+                    case "2i":
+                    btn2i.setEnabled(false);
+                    break;
+                    case "3i":
+                    btn3i.setEnabled(false);
+                    break;
+                    case "4i":
+                    btn4i.setEnabled(false);
+                    break;
+                    case "5i":
+                    btn5i.setEnabled(false);
+                    break;
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_cmbEmpleadosItemStateChanged
+
+    private void btn2dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2dActionPerformed
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        ponerInfo();
+        btn2d.setBackground(Color.red);
+        dedo = btn2d;
+        guardarHuella();
+    }//GEN-LAST:event_btn2dActionPerformed
+
+    private void btn3dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3dActionPerformed
+        // TODO add your handling code here:
+        System.out.println("cmbEmpleados.getSelectedItem() = " + cmbEmpleados.getSelectedItem());
+        cmbEmpleados.setEnabled(true);
+        System.out.println("cmbEmpleados.getSelectedItem() = " + cmbEmpleados.getSelectedItem());
+    }//GEN-LAST:event_btn3dActionPerformed
 
     private void hora() {
         calendario = new GregorianCalendar();
@@ -1023,7 +1348,6 @@ public class Checador extends javax.swing.JApplet {
         empleadosRetardos();
         empleadosAusentes();
         empleadosFaltantes();
-
     }
 
     private int empleadosTotales() {
@@ -1031,7 +1355,7 @@ public class Checador extends javax.swing.JApplet {
             ConnectionBD sql = new ConnectionBD();
             Connection cn = sql.conectar();
             PreparedStatement consulta;
-            consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idct = ?");
+            consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idempleado in (select idempleado from horarioempleado WHERE idct = ?)");
             consulta.setInt(1, id_ct);
             ResultSet resultado = consulta.executeQuery();
             int contador = 0;
@@ -1192,7 +1516,7 @@ public class Checador extends javax.swing.JApplet {
                         jpSection.setVisible(true);
                         jpFondo.setVisible(true);
                         jpHuellas.setVisible(true);
-                        //huellas();
+                        huellas();
                     }
                 }
                 System.out.println("checar = " + checar);
@@ -1220,21 +1544,167 @@ public class Checador extends javax.swing.JApplet {
         //dp.clear();
     }
 
+    private void huellas() {
+        status = false;
+        cargarEmpleados("");
+        Imagen i = new Imagen("com/ieepo/images/u123.png", jpHuellasFondo.getSize().width, jpHuellasFondo.getSize().height);
+        jpHuellasFondo.add(i);
+        jpHuellasFondo.repaint();
+    }
+
+    private void cargarEmpleados(String cadena) {
+        try {
+            ConnectionBD sql = new ConnectionBD();
+            Connection cn = sql.conectar();
+            PreparedStatement consulta;
+            //consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idct = ? and (nombre LIKE ? or appaterno LIKE ? or apmaterno LIKE ?) ORDER BY nombre");
+            consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idempleado in (SELECT idempleado FROM horarioempleado WHERE idct = ?) AND (nombre LIKE ? OR appaterno LIKE ? OR apmaterno LIKE ?) ORDER BY nombre");
+            consulta.setInt(1, id_ct);
+            consulta.setString(2, "%" + cadena + "%");
+            consulta.setString(3, "%" + cadena + "%");
+            consulta.setString(4, "%" + cadena + "%");
+            ResultSet resultado = consulta.executeQuery();
+
+            empleados = new ArrayList<>();
+            while (resultado.next()) {
+                int idEmpleado;
+                String nombre;
+                String apPaterno;
+                String apMaterno;
+                String rfc;
+                int idct;
+
+                idEmpleado = resultado.getInt("idempleado");
+                nombre = resultado.getString("nombre").trim();
+                apPaterno = resultado.getString("apPaterno").trim();
+                apMaterno = resultado.getString("apMaterno").trim();
+                rfc = resultado.getString("rfc").trim();
+                idct = resultado.getInt("idct");
+
+                Empleado e = new Empleado(idEmpleado, nombre, apPaterno, apMaterno, rfc, idct);
+                empleados.add(e);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Checador.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        cmbEmpleados.removeAllItems();
+        empleados.forEach((empleado) -> {
+            cmbEmpleados.addItem(empleado.toString());
+        });
+
+        System.out.println("cadena = " + cadena);
+
+    }
+
+    private void ponerInfo() {
+        int i = cmbEmpleados.getSelectedIndex();
+        Empleado empleado = empleados.get(i);
+        id_empleado = empleado.getIdEmpleado();
+        status = true;
+        cmbEmpleados.setEnabled(!status);
+    }
+
+    private void guardarHuella() {
+        Timer tiempo;
+        dp.clear();
+        tiempo = new Timer();
+        taskHuellas = new TimerTask() {
+            int contador = 1;
+
+            @Override
+            public void run() {
+                //contador++;
+                if (dp.Reclutador.getFeaturesNeeded() == 4 && contador == 1) {
+                    JOptionPane.showMessageDialog(null, "Ponga su dedo en el dispositivo", "", JOptionPane.INFORMATION_MESSAGE);
+                    contador++;
+                }
+                if (dp.Reclutador.getFeaturesNeeded() == 3 && contador == 2) {
+
+                    JOptionPane.showMessageDialog(null, "Una vez mas por favor!", "", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("aqui 2");
+                    contador++;
+                }
+                if (dp.Reclutador.getFeaturesNeeded() == 2 && contador == 3) {
+                    JOptionPane.showMessageDialog(null, "Otra vez por favor", "", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("aqui 3");
+                    contador++;
+                }
+                if (dp.Reclutador.getFeaturesNeeded() == 1 && contador == 4) {
+                    JOptionPane.showMessageDialog(null, "La ultima vez, ponga su dedo en el dispositivo!!", "", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("aqui 4");
+                    contador++;
+                }
+                if (dp.Reclutador.getFeaturesNeeded() == 0 && contador == 5) {
+                    JOptionPane.showMessageDialog(null, "Listo huella guardada", "", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("aqui 5");
+                    contador++;
+                }
+                if(dp.estadoHuellas () == TEMPLATE_STATUS_READY){
+                    try {
+                        ByteArrayInputStream datosHuella = new ByteArrayInputStream(dp.getTemplate().serialize());
+                        Integer tamanioHuella = dp.getTemplate().serialize().length;
+
+                        ConnectionBD sql = new ConnectionBD();
+                        Connection cn = sql.conectar();
+                        String d = dedo.getText();
+                        PreparedStatement ps = cn.prepareStatement("INSERT INTO huella(idempleado, huella, dedomano) VALUES (?,?, ?)");
+                        ps.setInt(1, id_empleado); ///////////////////////////////////////////////////////////////////////// id_empleado
+                        ps.setBinaryStream(2, datosHuella, tamanioHuella);
+                        ps.setString(3, d);
+
+                        ps.executeUpdate();
+
+                        JButton j = dedo;
+                        j.setBackground(Color.green);
+                        j.setEnabled(false);
+                        j.setBackground(Color.green);
+                        dp.stop();
+                        dp.clear();
+                        dp.stop();
+                        status = false;
+                        cmbEmpleados.setEnabled(!status);
+                        System.out.println("llega aqui");
+                        System.out.println("cmbEmpleados.getSelectedItem() = " + cmbEmpleados.getSelectedItem());
+                        
+                        taskHuellas.cancel();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(Checador.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }    
+        };        
+        tiempo.schedule (taskHuellas,0,1000);
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem Acceder;
+    private javax.swing.JButton btn1d;
+    private javax.swing.JButton btn1i;
+    private javax.swing.JButton btn2d;
+    private javax.swing.JButton btn2i;
+    private javax.swing.JButton btn3d;
+    private javax.swing.JButton btn3i;
+    private javax.swing.JButton btn4d;
+    private javax.swing.JButton btn4i;
+    private javax.swing.JButton btn5d;
+    private javax.swing.JButton btn5i;
     private javax.swing.JComboBox<String> cmbAdmin;
+    private javax.swing.JComboBox<String> cmbEmpleados;
     private org.jdesktop.swingx.JXPanel jXPanel1;
     private org.jdesktop.swingx.JXPanel jXPanel2;
     private org.jdesktop.swingx.JXPanel jpChecador;
     private org.jdesktop.swingx.JXPanel jpFondo;
     private org.jdesktop.swingx.JXPanel jpHuellas;
+    private org.jdesktop.swingx.JXPanel jpHuellasFondo;
     private org.jdesktop.swingx.JXPanel jpLogin;
     private org.jdesktop.swingx.JXPanel jpLogo;
     private org.jdesktop.swingx.JXPanel jpLogoPng;
     private org.jdesktop.swingx.JXPanel jpSection;
     private org.jdesktop.swingx.JXLabel lbAdmin;
     private org.jdesktop.swingx.JXLabel lbBienvenido;
+    private org.jdesktop.swingx.JXLabel lbCerrarSesion;
     private org.jdesktop.swingx.JXLabel lbDiaMes;
     private org.jdesktop.swingx.JXLabel lbEmpPr;
     private org.jdesktop.swingx.JXLabel lbEmpRet;
@@ -1249,8 +1719,11 @@ public class Checador extends javax.swing.JApplet {
     private org.jdesktop.swingx.JXLabel lbEmpleadosTotales;
     private org.jdesktop.swingx.JXLabel lbHora;
     private org.jdesktop.swingx.JXLabel lbMenu;
+    private org.jdesktop.swingx.JXLabel lbRegresar;
+    private org.jdesktop.swingx.JXLabel lbSelEmp;
     private org.jdesktop.swingx.JXLabel lbTipo;
     private org.jdesktop.swingx.JXLabel lbTitulo;
     private javax.swing.JPopupMenu pmMenu;
+    private javax.swing.JTextField txtEmpleado;
     // End of variables declaration//GEN-END:variables
 }
