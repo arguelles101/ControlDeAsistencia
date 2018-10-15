@@ -243,7 +243,6 @@ public class Checador extends javax.swing.JApplet {
         jpSection.setPreferredSize(new java.awt.Dimension(1000, 500));
 
         jpChecador.setBackground(new java.awt.Color(255, 255, 255));
-        jpChecador.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jpChecador.setPreferredSize(new java.awt.Dimension(1000, 500));
 
         lbDiaMes.setForeground(new java.awt.Color(51, 153, 255));
@@ -390,7 +389,7 @@ public class Checador extends javax.swing.JApplet {
                         .addGroup(jpChecadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jpChecadorLayout.createSequentialGroup()
                                 .addComponent(lbEmpleadosRetardo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
                                 .addComponent(lbEmpRet3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lbEmpleadosFaltantes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -526,18 +525,53 @@ public class Checador extends javax.swing.JApplet {
         });
 
         btn4d.setText("4d");
+        btn4d.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn4dActionPerformed(evt);
+            }
+        });
 
         btn5d.setText("5d");
+        btn5d.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn5dActionPerformed(evt);
+            }
+        });
 
         btn1i.setText("1i");
+        btn1i.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn1iActionPerformed(evt);
+            }
+        });
 
         btn2i.setText("2i");
+        btn2i.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn2iActionPerformed(evt);
+            }
+        });
 
         btn5i.setText("5i");
+        btn5i.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn5iActionPerformed(evt);
+            }
+        });
 
         btn4i.setText("4i");
+        btn4i.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn4iActionPerformed(evt);
+            }
+        });
 
         btn3i.setText("3i");
+        btn3i.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn3iActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jpHuellasFondoLayout = new javax.swing.GroupLayout(jpHuellasFondo);
         jpHuellasFondo.setLayout(jpHuellasFondoLayout);
@@ -627,7 +661,7 @@ public class Checador extends javax.swing.JApplet {
                 .addComponent(lbCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(129, 129, 129))
             .addGroup(jpHuellasLayout.createSequentialGroup()
-                .addContainerGap(300, Short.MAX_VALUE)
+                .addContainerGap(299, Short.MAX_VALUE)
                 .addGroup(jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jpHuellasLayout.createSequentialGroup()
                         .addComponent(lbSelEmp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -635,7 +669,7 @@ public class Checador extends javax.swing.JApplet {
                         .addComponent(txtEmpleado))
                     .addComponent(cmbEmpleados, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jpHuellasFondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(300, Short.MAX_VALUE))
+                .addContainerGap(301, Short.MAX_VALUE))
         );
         jpHuellasLayout.setVerticalGroup(
             jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -918,10 +952,91 @@ public class Checador extends javax.swing.JApplet {
 
     private void btn3dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3dActionPerformed
         // TODO add your handling code here:
-        System.out.println("cmbEmpleados.getSelectedItem() = " + cmbEmpleados.getSelectedItem());
-        cmbEmpleados.setEnabled(true);
-        System.out.println("cmbEmpleados.getSelectedItem() = " + cmbEmpleados.getSelectedItem());
+        if (status) {
+            return;
+        }
+        ponerInfo();
+        btn3d.setBackground(Color.red);
+        dedo = btn3d;
+        guardarHuella();
     }//GEN-LAST:event_btn3dActionPerformed
+
+    private void btn4dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4dActionPerformed
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        ponerInfo();
+        btn4d.setBackground(Color.red);
+        dedo = btn4d;
+        guardarHuella();
+    }//GEN-LAST:event_btn4dActionPerformed
+
+    private void btn5dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5dActionPerformed
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        ponerInfo();
+        btn5d.setBackground(Color.red);
+        dedo = btn5d;
+        guardarHuella();
+    }//GEN-LAST:event_btn5dActionPerformed
+
+    private void btn1iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1iActionPerformed
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        ponerInfo();
+        btn1i.setBackground(Color.red);
+        dedo = btn1i;
+        guardarHuella();
+    }//GEN-LAST:event_btn1iActionPerformed
+
+    private void btn2iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2iActionPerformed
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        ponerInfo();
+        btn2i.setBackground(Color.red);
+        dedo = btn2i;
+        guardarHuella();
+    }//GEN-LAST:event_btn2iActionPerformed
+
+    private void btn3iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3iActionPerformed
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        ponerInfo();
+        btn3i.setBackground(Color.red);
+        dedo = btn3i;
+        guardarHuella();
+    }//GEN-LAST:event_btn3iActionPerformed
+
+    private void btn4iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4iActionPerformed
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        ponerInfo();
+        btn4i.setBackground(Color.red);
+        dedo = btn4i;
+        guardarHuella();
+    }//GEN-LAST:event_btn4iActionPerformed
+
+    private void btn5iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5iActionPerformed
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        ponerInfo();
+        btn5i.setBackground(Color.red);
+        dedo = btn5i;
+        guardarHuella();
+    }//GEN-LAST:event_btn5iActionPerformed
 
     private void hora() {
         calendario = new GregorianCalendar();
