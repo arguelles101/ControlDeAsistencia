@@ -38,7 +38,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -82,6 +81,9 @@ public class ChecadorI extends javax.swing.JApplet {
     int id_empleado;
     private Boolean status; //Variable para saber si se esta utilizando el dispositivo en algun dedo
     JButton dedo;
+    
+    ConnectionBD sql;
+    Connection cn;
 
     /**
      * Initializes the applet Checador
@@ -133,6 +135,8 @@ public class ChecadorI extends javax.swing.JApplet {
                 jpLogoPng.repaint();
                 
                 //Se agrega comentarios
+                sql = new ConnectionBD();
+                cn = sql.conectar();
                 
                 if ( preferences.getInt("id_ct", -1) == -1) {
                     taparTodo();
@@ -882,8 +886,6 @@ public class ChecadorI extends javax.swing.JApplet {
         jpSection.setVisible(true);
         jpLogin.setVisible(true);
 
-        ConnectionBD sql = new ConnectionBD();
-        Connection cn = sql.conectar();
         PreparedStatement consulta;
 
         admins = new ArrayList<>();
@@ -982,8 +984,6 @@ public class ChecadorI extends javax.swing.JApplet {
         Empleado empleado = empleados.get(i);
         id_empleado = empleado.getIdEmpleado();
 
-        ConnectionBD sql = new ConnectionBD();
-        Connection cn = sql.conectar();
         PreparedStatement consulta;
         try {
             consulta = cn.prepareStatement("SELECT * FROM huella where idempleado = ?");
@@ -1204,7 +1204,6 @@ public class ChecadorI extends javax.swing.JApplet {
         jpChecador.setVisible(true);
         jpSeleccionarCts.setVisible(false);
 
-        System.out.println("id_ct = " + id_ct);
         Preferences preferences = Preferences.userNodeForPackage(ChecadorI.class);
         
         preferences.putBoolean("id_ct", true);
@@ -1222,8 +1221,6 @@ public class ChecadorI extends javax.swing.JApplet {
     }//GEN-LAST:event_txtCtKeyReleased
 
     private void inicio() {
-        ConnectionBD sql = new ConnectionBD();
-        Connection cn = sql.conectar();
         try {
             PreparedStatement consulta;
             consulta = cn.prepareStatement("SELECT * FROM cts WHERE idct = ?");
@@ -1271,8 +1268,6 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private int empleadosTotales() {
         try {
-            ConnectionBD sql = new ConnectionBD();
-            Connection cn = sql.conectar();
             PreparedStatement consulta;
             consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idempleado in (select idempleado from horarioempleado WHERE idct = ?)");
             consulta.setInt(1, id_ct);
@@ -1298,9 +1293,7 @@ public class ChecadorI extends javax.swing.JApplet {
             Date date = new Date();
             String fecha = dateFormat.format(date);
 
-            ConnectionBD sql = new ConnectionBD();
-            Connection cn = sql.conectar();
-            PreparedStatement consulta;
+           PreparedStatement consulta;
             consulta = cn.prepareStatement("SELECT * FROM (SELECT * FROM incidencias WHERE idctlocal = ? and fechahora like ? and movimiento = 'ENTRADA'"
                     + "	GROUP BY idempleado) as t where t.tipo = '' OR tipo = 'PERMISO'");
             consulta.setInt(1, id_ct);
@@ -1324,8 +1317,6 @@ public class ChecadorI extends javax.swing.JApplet {
             Date date = new Date();
             String fecha = dateFormat.format(date);
 
-            ConnectionBD sql = new ConnectionBD();
-            Connection cn = sql.conectar();
             PreparedStatement consulta;
             consulta = cn.prepareStatement("SELECT * FROM incidencias WHERE idctlocal = ? and fechahora like ? and movimiento = 'ENTRADA' and (tipo = 'RETARDO' OR tipo = 'PERMISO RETARDO') GROUP BY idempleado ORDER BY idincidencia, tipo");
             consulta.setInt(1, id_ct);
@@ -1350,8 +1341,6 @@ public class ChecadorI extends javax.swing.JApplet {
             Date date = new Date();
             String fecha = dateFormat.format(date);
 
-            ConnectionBD sql = new ConnectionBD();
-            Connection cn = sql.conectar();
             PreparedStatement consulta;
             consulta = cn.prepareStatement("SELECT * FROM incidencias WHERE idctlocal = ? and fechahora like ? and movimiento = 'ENTRADA' and tipo = 'FALTA' GROUP BY idempleado ORDER BY idincidencia, tipo");
             consulta.setInt(1, id_ct);
@@ -1373,8 +1362,6 @@ public class ChecadorI extends javax.swing.JApplet {
             Date date = new Date();
             String fecha = dateFormat.format(date);
 
-            ConnectionBD sql = new ConnectionBD();
-            Connection cn = sql.conectar();
             PreparedStatement consulta;
             consulta = cn.prepareStatement("SELECT * FROM incidencias WHERE idctlocal = ? and fechahora like ? and movimiento = 'ENTRADA' GROUP BY idempleado ORDER BY idincidencia");
             consulta.setInt(1, id_ct);
@@ -1512,14 +1499,10 @@ public class ChecadorI extends javax.swing.JApplet {
         Boolean activo = dp.getActivo();
         if (activo && !adminActivo) {
             try {
-                ConnectionBD sql = new ConnectionBD();
-
-                Connection cn = sql.conectar();
                 PreparedStatement consulta;
                 //consulta = cn.prepareStatement("SELECT * FROM huella");
                 consulta = cn.prepareStatement("SELECT * FROM huella WHERE idempleado in (select idempleado from horarioempleado WHERE idct = ?)");
                 consulta.setInt(1, id_ct);
-                System.out.println("consulta = " + consulta);
                 ResultSet resultado = consulta.executeQuery();
                 Boolean si = false;
                 while (resultado.next()) {
@@ -1549,8 +1532,6 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void mandar(int id_empleado) {
         try {
-            ConnectionBD sql = new ConnectionBD();
-            Connection cn = sql.conectar();
             PreparedStatement consulta;
 
             consulta = cn.prepareStatement("SELECT * FROM horarioempleado WHERE idempleado = ?");
@@ -1841,14 +1822,12 @@ public class ChecadorI extends javax.swing.JApplet {
         }
     }
 
-    private String[] compararEntrada(Time horaEComparar, Time horaDBComparar, int id_empleado) {
+    private String[] compararEntrada(Time horaEComparar, Time horaDBComparar, int id_empleado)  {
         String datos[] = new String[3];
         String d = "";
         Permiso p = null;
         try {
             Time horaAux = new Time(horaEComparar.getHours(), horaEComparar.getMinutes() - minutos_retardo, horaEComparar.getSeconds());
-            ConnectionBD sql = new ConnectionBD();
-            Connection cn = sql.conectar();
             PreparedStatement consulta;
             ResultSet resultado;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -1860,7 +1839,6 @@ public class ChecadorI extends javax.swing.JApplet {
             consulta.setString(3, fecha);
             consulta.setTime(4, horaAux);
             consulta.setTime(5, horaAux);
-            System.out.println("consulta = " + consulta);
             resultado = consulta.executeQuery();
             if (resultado.next()) {
                 int id_permiso;
@@ -1881,7 +1859,6 @@ public class ChecadorI extends javax.swing.JApplet {
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("p = " + p);
         if (p != null) {
             horaDBComparar = p.getHora_reinicio();
             datos[1] = "PERMISO";
@@ -1921,8 +1898,6 @@ public class ChecadorI extends javax.swing.JApplet {
 
         try {
             Time horaAux = new Time(horaEComparar.getHours(), horaEComparar.getMinutes() + minutos_normal, horaEComparar.getSeconds());
-            ConnectionBD sql = new ConnectionBD();
-            Connection cn = sql.conectar();
             PreparedStatement consulta;
             ResultSet resultado;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -1934,7 +1909,6 @@ public class ChecadorI extends javax.swing.JApplet {
             consulta.setString(3, fecha);
             consulta.setTime(4, horaAux);
             consulta.setTime(5, horaAux);
-            System.out.println("consulta = " + consulta);
             resultado = consulta.executeQuery();
             if (resultado.next()) {
                 int id_permiso;
@@ -1956,7 +1930,6 @@ public class ChecadorI extends javax.swing.JApplet {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        System.out.println("p = " + p);
         if (p != null) {
             horaDBComparar = p.getHora_inicio();
             datos[1] = "PERMISO";
@@ -1981,8 +1954,6 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void bienvenido(int id_empleado, String fecha, int id_ct, String movimiento, String tipo) {
         try {
-            ConnectionBD sql = new ConnectionBD();
-            Connection cn = sql.conectar();
             PreparedStatement consulta;
             consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idempleado = ?");
             consulta.setInt(1, id_empleado);
@@ -2033,8 +2004,6 @@ public class ChecadorI extends javax.swing.JApplet {
         }
         if (activo && adminActivo) {
             try {
-                ConnectionBD sql = new ConnectionBD();
-                Connection cn = sql.conectar();
                 PreparedStatement consulta;
                 int aux_id_empleado = admins.get(cmbAdmin.getSelectedIndex()).getIdEmpleado();
                 consulta = cn.prepareStatement("SELECT * FROM huella WHERE idempleado = ?");
@@ -2089,8 +2058,6 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void cargarEmpleados(String cadena) {
         try {
-            ConnectionBD sql = new ConnectionBD();
-            Connection cn = sql.conectar();
             PreparedStatement consulta;
             //consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idct = ? and (nombre LIKE ? or appaterno LIKE ? or apmaterno LIKE ?) ORDER BY nombre");
             consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idempleado in (SELECT idempleado FROM horarioempleado WHERE idct = ?) AND (nombre LIKE ? OR appaterno LIKE ? OR apmaterno LIKE ?) ORDER BY nombre");
@@ -2099,7 +2066,6 @@ public class ChecadorI extends javax.swing.JApplet {
             consulta.setString(3, "%" + cadena + "%");
             consulta.setString(4, "%" + cadena + "%");
             ResultSet resultado = consulta.executeQuery();
-            System.out.println("consulta = " + consulta);
             empleados = new ArrayList<>();
             while (resultado.next()) {
                 int idEmpleado;
@@ -2175,8 +2141,6 @@ public class ChecadorI extends javax.swing.JApplet {
                         ByteArrayInputStream datosHuella = new ByteArrayInputStream(dp.getTemplate().serialize());
                         Integer tamanioHuella = dp.getTemplate().serialize().length;
 
-                        ConnectionBD sql = new ConnectionBD();
-                        Connection cn = sql.conectar();
                         String d = dedo.getText();
                         PreparedStatement ps = cn.prepareStatement("INSERT INTO huella(idempleado, huella, dedomano) VALUES (?,?, ?)");
                         ps.setInt(1, id_empleado); ///////////////////////////////////////////////////////////////////////// id_empleado
@@ -2209,11 +2173,8 @@ public class ChecadorI extends javax.swing.JApplet {
     }
 
     private void cambiarPermisos(int id_em, Time horaAux) {
-        System.out.println("llllllllllllllllllllllega");
         Permiso p = null;
         try {
-            ConnectionBD sql = new ConnectionBD();
-            Connection cn = sql.conectar();
             PreparedStatement consulta;
             ResultSet resultado;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -2225,7 +2186,6 @@ public class ChecadorI extends javax.swing.JApplet {
             consulta.setString(3, fecha);
             consulta.setTime(4, horaAux);
             consulta.setTime(5, horaAux);
-            System.out.println("consulta = " + consulta);
             resultado = consulta.executeQuery();
             if (resultado.next()) {
                 int id_permiso;
@@ -2251,7 +2211,6 @@ public class ChecadorI extends javax.swing.JApplet {
                 tipo_permiso = resultado.getString("tipodpermiso");
                 p = new Permiso(id_permiso, id_incidencia, id_em, hora_inicio, hora_reinicio, fecha_inicio, fecha_reinicio, autorizo, numdoc, nota, tipo_permiso);
             }
-            System.out.println("p = " + p);
             if (p != null) {
                 date = p.getFecha_inicio();
                 Date date1 = p.getFecha_reinicio();
@@ -2262,7 +2221,6 @@ public class ChecadorI extends javax.swing.JApplet {
                 while (!fecha.equals(date1i)) {
                     aux = new Date(aux.getYear(), aux.getMonth(), aux.getDate() + 1);
                     fecha = dateFormat.format(aux);
-                    System.out.println("fecha = " + fecha);
                     PreparedStatement ps = cn.prepareStatement("INSERT INTO permisos(idempleado, horainicio, horareinicio, fechainicio, fechareinicio, autorizo, numdoc, nota, tipodpermiso) VALUES (?,?,?,?,?,?,?,?,?)");
                     ps.setInt(1, id_em);
                     ps.setTime(2, p.getHora_inicio());
@@ -2282,8 +2240,6 @@ public class ChecadorI extends javax.swing.JApplet {
     }
 
     private void cargarCts(String cadena){
-        ConnectionBD sql = new ConnectionBD();
-        Connection cn = sql.conectar();
         cts = new ArrayList<>();
         try {
             PreparedStatement consulta;
