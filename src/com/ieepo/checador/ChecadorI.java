@@ -132,6 +132,8 @@ public class ChecadorI extends javax.swing.JApplet {
                 jpLogoPng.add(iii);
                 jpLogoPng.repaint();
                 
+                //Se agrega comentarios
+                
                 if ( preferences.getInt("id_ct", -1) == -1) {
                     taparTodo();
                     jpSection.setVisible(true);
