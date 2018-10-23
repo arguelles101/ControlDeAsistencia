@@ -38,6 +38,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -81,7 +82,7 @@ public class ChecadorI extends javax.swing.JApplet {
     int id_empleado;
     private Boolean status; //Variable para saber si se esta utilizando el dispositivo en algun dedo
     JButton dedo;
-    
+
     ConnectionBD sql;
     Connection cn;
 
@@ -119,6 +120,9 @@ public class ChecadorI extends javax.swing.JApplet {
 
                 Preferences preferences = Preferences.userNodeForPackage(ChecadorI.class);
 
+                sql = new ConnectionBD();
+                cn = sql.conectar();
+                
                 /*if(true){
                     try {
                         preferences.clear();
@@ -133,12 +137,10 @@ public class ChecadorI extends javax.swing.JApplet {
                 Imagen iii = new Imagen("com/ieepo/checador/images/logo.png", (int) (jpLogo.getPreferredSize().width * 0.5), jpLogoPng.getPreferredSize().height);
                 jpLogoPng.add(iii);
                 jpLogoPng.repaint();
+
                 
-                //Se agrega comentarios
-                sql = new ConnectionBD();
-                cn = sql.conectar();
-                
-                if ( preferences.getInt("id_ct", -1) == -1) {
+
+                if (preferences.getInt("id_ct", -1) == -1) {
                     taparTodo();
                     jpSection.setVisible(true);
                     jpFondo.setVisible(true);
@@ -152,6 +154,12 @@ public class ChecadorI extends javax.swing.JApplet {
         } catch (InterruptedException | InvocationTargetException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy(); //To change body of generated methods, choose Tools | Templates.
+        sql.desconectar();
     }
 
     /**
@@ -1205,7 +1213,7 @@ public class ChecadorI extends javax.swing.JApplet {
         jpSeleccionarCts.setVisible(false);
 
         Preferences preferences = Preferences.userNodeForPackage(ChecadorI.class);
-        
+
         preferences.putBoolean("id_ct", true);
         preferences.putInt("id_ct", id_ct);
         inicio();
@@ -1214,7 +1222,7 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void txtCtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCtKeyReleased
         // TODO add your handling code here:
-        if(evt.getKeyCode() == 10){
+        if (evt.getKeyCode() == 10) {
             return;
         }
         cargarCts(txtCt.getText().trim());
@@ -1237,10 +1245,8 @@ public class ChecadorI extends javax.swing.JApplet {
             }
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            sql.desconectar();
         }
-        
+
         lbCt.setText(ct.getDomicilio());
 
         dp = new DigitalPersona();
@@ -1293,7 +1299,7 @@ public class ChecadorI extends javax.swing.JApplet {
             Date date = new Date();
             String fecha = dateFormat.format(date);
 
-           PreparedStatement consulta;
+            PreparedStatement consulta;
             consulta = cn.prepareStatement("SELECT * FROM (SELECT * FROM incidencias WHERE idctlocal = ? and fechahora like ? and movimiento = 'ENTRADA'"
                     + "	GROUP BY idempleado) as t where t.tipo = '' OR tipo = 'PERMISO'");
             consulta.setInt(1, id_ct);
@@ -1569,7 +1575,6 @@ public class ChecadorI extends javax.swing.JApplet {
                     Horario h = new Horario(id_horario, id_turno, hora_entrada, hora_salida, hora_entrada_v, hora_salida_v);
 
                     calendario = new GregorianCalendar();
-                    java.util.Date d = new java.util.Date();
 
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date();
@@ -1822,7 +1827,7 @@ public class ChecadorI extends javax.swing.JApplet {
         }
     }
 
-    private String[] compararEntrada(Time horaEComparar, Time horaDBComparar, int id_empleado)  {
+    private String[] compararEntrada(Time horaEComparar, Time horaDBComparar, int id_empleado) {
         String datos[] = new String[3];
         String d = "";
         Permiso p = null;
@@ -2059,8 +2064,8 @@ public class ChecadorI extends javax.swing.JApplet {
     private void cargarEmpleados(String cadena) {
         try {
             PreparedStatement consulta;
-            //consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idct = ? and (nombre LIKE ? or appaterno LIKE ? or apmaterno LIKE ?) ORDER BY nombre");
-            consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idempleado in (SELECT idempleado FROM horarioempleado WHERE idct = ?) AND (nombre LIKE ? OR appaterno LIKE ? OR apmaterno LIKE ?) ORDER BY nombre");
+            consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idct = ? and (nombre LIKE ? or appaterno LIKE ? or apmaterno LIKE ?) ORDER BY nombre");
+            //consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idempleado in (SELECT idempleado FROM horarioempleado WHERE idct = ?) AND (nombre LIKE ? OR appaterno LIKE ? OR apmaterno LIKE ?) ORDER BY nombre");
             consulta.setInt(1, id_ct);
             consulta.setString(2, "%" + cadena + "%");
             consulta.setString(3, "%" + cadena + "%");
@@ -2239,7 +2244,7 @@ public class ChecadorI extends javax.swing.JApplet {
         }
     }
 
-    private void cargarCts(String cadena){
+    private void cargarCts(String cadena) {
         cts = new ArrayList<>();
         try {
             PreparedStatement consulta;
@@ -2264,8 +2269,6 @@ public class ChecadorI extends javax.swing.JApplet {
             });
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            sql.desconectar();
         }
     }
 
