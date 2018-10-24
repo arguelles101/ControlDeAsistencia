@@ -10,6 +10,7 @@ package com.ieepo.checador.model;
  * @author varguelles
  */
 public class Ct {
+
     private int id_ct;
     private String clave;
     private String domicilio;

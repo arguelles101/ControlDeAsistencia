@@ -12,6 +12,7 @@ import java.util.Date;
  * @author varguelles
  */
 public class HorarioEmpleado {
+
     private int id_horario_empleado;
     private int id_empleado;
     private int id_ct;
@@ -114,7 +115,7 @@ public class HorarioEmpleado {
     public void setExcepcion(int excepcion) {
         this.excepcion = excepcion;
     }
-    
+
     @Override
     public String toString() {
         return "HorarioEmpleado{" + "id_horario_empleado=" + id_horario_empleado + ", id_empleado=" + id_empleado + ", id_ct=" + id_ct + ", fecha_asigna_hora=" + fecha_asigna_hora + ", id_horario=" + id_horario + ", id_area=" + id_area + ", activo=" + activo + ", excepcion=" + excepcion + '}';
