@@ -14,6 +14,7 @@ import com.ieepo.checador.model.Empleado;
 import com.ieepo.checador.model.Horario;
 import com.ieepo.checador.model.HorarioEmpleado;
 import com.ieepo.checador.model.Permiso;
+import com.ieepo.checador.security.Authenticator;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -38,10 +39,23 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.ExcessiveAttemptsException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.LockedAccountException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.credential.DefaultPasswordService;
+import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.crypto.hash.DefaultHashService;
+import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.Factory;
 
 /**
  *
@@ -122,7 +136,7 @@ public class ChecadorI extends javax.swing.JApplet {
 
                 sql = new ConnectionBD();
                 cn = sql.conectar();
-                
+
                 /*if(true){
                     try {
                         preferences.clear();
@@ -131,25 +145,22 @@ public class ChecadorI extends javax.swing.JApplet {
                     }
                     return;
                 }*/
-                
                 lbTitulo.setText(TITULO);
                 lbCt.setText("");
                 Imagen iii = new Imagen("com/ieepo/checador/images/logo.png", (int) (jpLogo.getPreferredSize().width * 0.5), jpLogoPng.getPreferredSize().height);
                 jpLogoPng.add(iii);
                 jpLogoPng.repaint();
 
-                
-
-                if (preferences.getInt("id_ct", -1) == -1) {
-                    taparTodo();
-                    jpSection.setVisible(true);
-                    jpFondo.setVisible(true);
-                    jpSeleccionarCts.setVisible(true);
-                    cargarCts("");
-                } else {
-                    id_ct = preferences.getInt("id_ct", -1);
-                    inicio();
-                }
+                //if (preferences.getInt("id_ct", -1) == -1) {
+                //taparTodo();
+                //jpSection.setVisible(true);
+                //jpFondo.setVisible(true);
+                //jpSeleccionarCts.setVisible(true);
+                //cargarCts("");
+                //} else {
+                //  id_ct = preferences.getInt("id_ct", -1);
+                inicio();
+                //}
             });
         } catch (InterruptedException | InvocationTargetException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
@@ -219,10 +230,9 @@ public class ChecadorI extends javax.swing.JApplet {
         lbCerrarSesion = new org.jdesktop.swingx.JXLabel();
         btnCancelarGuardarHuella = new javax.swing.JButton();
         jpSeleccionarCts = new org.jdesktop.swingx.JXPanel();
-        jXLabel1 = new org.jdesktop.swingx.JXLabel();
-        cmbCts = new javax.swing.JComboBox<>();
         btnSeleccion = new javax.swing.JButton();
-        txtCt = new javax.swing.JTextField();
+        txtAdmin = new javax.swing.JTextField();
+        txtPassAdmin = new javax.swing.JPasswordField();
 
         Acceder.setText("Acceder");
         Acceder.addActionListener(new java.awt.event.ActionListener() {
@@ -774,20 +784,10 @@ public class ChecadorI extends javax.swing.JApplet {
         jpSeleccionarCts.setBackground(new java.awt.Color(255, 255, 255));
         jpSeleccionarCts.setPreferredSize(new java.awt.Dimension(600, 400));
 
-        jXLabel1.setText("Seleccionar ct:");
-
-        cmbCts.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         btnSeleccion.setText("Seleccionar");
         btnSeleccion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSeleccionActionPerformed(evt);
-            }
-        });
-
-        txtCt.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtCtKeyReleased(evt);
             }
         });
 
@@ -796,27 +796,25 @@ public class ChecadorI extends javax.swing.JApplet {
         jpSeleccionarCtsLayout.setHorizontalGroup(
             jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpSeleccionarCtsLayout.createSequentialGroup()
-                .addGap(83, 83, 83)
-                .addGroup(jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnSeleccion)
+                .addGroup(jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpSeleccionarCtsLayout.createSequentialGroup()
-                        .addComponent(jXLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addGap(414, 414, 414)
+                        .addComponent(btnSeleccion))
+                    .addGroup(jpSeleccionarCtsLayout.createSequentialGroup()
+                        .addGap(158, 158, 158)
                         .addGroup(jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtCt)
-                            .addComponent(cmbCts, 0, 330, Short.MAX_VALUE))))
+                            .addComponent(txtPassAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                            .addComponent(txtAdmin))))
                 .addContainerGap(99, Short.MAX_VALUE))
         );
         jpSeleccionarCtsLayout.setVerticalGroup(
             jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpSeleccionarCtsLayout.createSequentialGroup()
-                .addGap(121, 121, 121)
-                .addComponent(txtCt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jXLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmbCts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(28, 28, 28)
+                .addGap(133, 133, 133)
+                .addComponent(txtAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(txtPassAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(9, 9, 9)
                 .addComponent(btnSeleccion)
                 .addContainerGap(177, Short.MAX_VALUE))
         );
@@ -1206,27 +1204,98 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btnSeleccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeleccionActionPerformed
 
-        id_ct = cts.get(cmbCts.getSelectedIndex()).getId_ct();
-        taparTodo();
-        jpSection.setVisible(true);
-        jpChecador.setVisible(true);
-        jpSeleccionarCts.setVisible(false);
+        String username = txtAdmin.getText();
+        String password = txtPassAdmin.getText();
+        
+        
+        
+        String rawPassword = "secret";
+        DefaultPasswordService passwordService = new DefaultPasswordService();
+        String encryptedPassword = passwordService.encryptPassword(rawPassword);
+        String hash = passwordService.hashPassword(rawPassword).toString();
 
-        Preferences preferences = Preferences.userNodeForPackage(ChecadorI.class);
+//Create the user
+    
+        System.out.println("username = " + username);
+        System.out.println("encryptedPassword = " + encryptedPassword);
+        System.out.println("encryptedPassword.length() = " + encryptedPassword.length());
+        System.out.println("hash = " + hash);        
+        
+        try {
+            UsernamePasswordToken userToken = new UsernamePasswordToken(username, rawPassword);
+            Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory();
+            org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
+
+            
+            
+            SecurityUtils.setSecurityManager(securityManager);
+            System.out.println("userToken = " + userToken);
+            SecurityUtils.getSubject().login(userToken);
+        } catch (UnknownAccountException uae) {
+            System.out.println("uae = " + uae);
+        } catch (IncorrectCredentialsException ice) {
+            System.out.println("ice = " + ice);
+        } catch (LockedAccountException lae) {
+            System.out.println("lae = " + lae);
+        } catch (ExcessiveAttemptsException eae) {
+            System.out.println("eae = " + eae);
+        } catch (AuthenticationException ae) {
+            System.out.println("ae = " + ae);
+        } catch (Exception ex) {
+            System.out.println("ex = " + ex);
+        }
+        System.out.println("si");
+
+        /*Authenticator authenticator = new Authenticator();
+
+        Subject currentUser = authenticator.authenticate(userName, password);
+
+        DefaultHashService hashService = new DefaultHashService();
+        hashService.setHashIterations(50000);
+        hashService.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);
+        hashService.setGeneratePublicSalt(true);
+
+        DefaultPasswordService passwordService = new DefaultPasswordService();
+        passwordService.setHashService(hashService);
+        String encryptedPassword = passwordService.encryptPassword("admin1234");
+        
+
+        System.out.println("encryptedPassword = " + encryptedPassword);
+        encryptedPassword = passwordService.encryptPassword("admin1234");
+        System.out.println("encryptedPassword = " + encryptedPassword);
+        encryptedPassword = passwordService.encryptPassword("admin1234");
+        System.out.println("encryptedPassword = " + encryptedPassword);
+        encryptedPassword = passwordService.encryptPassword("admin1234");
+        System.out.println("encryptedPassword = " + encryptedPassword);
+
+        
+ 
+        
+        
+
+        if (currentUser.isAuthenticated()) {
+            Session session = currentUser.getSession();
+
+            //Storing some attributes
+            session.setAttribute("Connected", "yes");
+
+            //Retrieving attributes later on 
+            String attribute = session.getAttribute("Connected").toString();
+
+            System.out.println("Connected : " + attribute);
+
+            JOptionPane.showMessageDialog(rootPane, "Login Success!!!");
+        } else {
+            JOptionPane.showMessageDialog(rootPane, "Could not authenticate user");
+            //System.out.println("Could not authenticate user");
+        }
+
+        /*Preferences preferences = Preferences.userNodeForPackage(ChecadorI.class);
 
         preferences.putBoolean("id_ct", true);
         preferences.putInt("id_ct", id_ct);
-        inicio();
-
+        inicio();*/
     }//GEN-LAST:event_btnSeleccionActionPerformed
-
-    private void txtCtKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCtKeyReleased
-        // TODO add your handling code here:
-        if (evt.getKeyCode() == 10) {
-            return;
-        }
-        cargarCts(txtCt.getText().trim());
-    }//GEN-LAST:event_txtCtKeyReleased
 
     private void inicio() {
         try {
@@ -2263,10 +2332,7 @@ public class ChecadorI extends javax.swing.JApplet {
                 ct = new Ct(aux, clave, domicilio);
                 cts.add(ct);
             }
-            cmbCts.removeAllItems();
-            cts.forEach((ct1) -> {
-                cmbCts.addItem(ct1.toString());
-            });
+
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -2287,9 +2353,7 @@ public class ChecadorI extends javax.swing.JApplet {
     private javax.swing.JButton btnCancelarGuardarHuella;
     private javax.swing.JButton btnSeleccion;
     private javax.swing.JComboBox<String> cmbAdmin;
-    private javax.swing.JComboBox<String> cmbCts;
     private javax.swing.JComboBox<String> cmbEmpleados;
-    private org.jdesktop.swingx.JXLabel jXLabel1;
     private org.jdesktop.swingx.JXPanel jpBienvenido;
     private org.jdesktop.swingx.JXPanel jpChecador;
     private org.jdesktop.swingx.JXPanel jpFondo;
@@ -2323,8 +2387,9 @@ public class ChecadorI extends javax.swing.JApplet {
     private org.jdesktop.swingx.JXLabel lbTipo;
     private org.jdesktop.swingx.JXLabel lbTitulo;
     private javax.swing.JPopupMenu pmMenu;
-    private javax.swing.JTextField txtCt;
+    private javax.swing.JTextField txtAdmin;
     private javax.swing.JTextField txtEmpleado;
+    private javax.swing.JPasswordField txtPassAdmin;
     // End of variables declaration//GEN-END:variables
 
 }
