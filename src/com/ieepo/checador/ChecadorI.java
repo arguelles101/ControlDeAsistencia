@@ -14,7 +14,6 @@ import com.ieepo.checador.model.Empleado;
 import com.ieepo.checador.model.Horario;
 import com.ieepo.checador.model.HorarioEmpleado;
 import com.ieepo.checador.model.Permiso;
-import com.ieepo.checador.security.Authenticator;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -51,10 +50,6 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.config.IniSecurityManagerFactory;
-import org.apache.shiro.crypto.hash.DefaultHashService;
-import org.apache.shiro.crypto.hash.Sha256Hash;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.Factory;
 
 /**
@@ -69,6 +64,12 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private final int minutos_normal = 10;
     private final int minutos_retardo = 30;
+    private final String SALIDA = "SALIDA";
+    private final String ENTRADA = "ENTRADA";
+    private final String PERMISO = "PERMISO";
+    private final String FALTA = "Falta";
+    private final String RETARDO = "RETARDO";
+    private final String ANTICIPADA = "ANTICIPADA";
 
     private DigitalPersona dp;
 
@@ -96,6 +97,7 @@ public class ChecadorI extends javax.swing.JApplet {
     int id_empleado;
     private Boolean status; //Variable para saber si se esta utilizando el dispositivo en algun dedo
     JButton dedo;
+    String eliminarHuella = "";
 
     ConnectionBD sql;
     Connection cn;
@@ -212,6 +214,7 @@ public class ChecadorI extends javax.swing.JApplet {
         cmbAdmin = new javax.swing.JComboBox<>();
         lbAdmin = new org.jdesktop.swingx.JXLabel();
         lbRegresar = new org.jdesktop.swingx.JXLabel();
+        txtAdministrador = new javax.swing.JTextField();
         jpHuellas = new org.jdesktop.swingx.JXPanel();
         lbSelEmp = new org.jdesktop.swingx.JXLabel();
         txtEmpleado = new javax.swing.JTextField();
@@ -229,6 +232,7 @@ public class ChecadorI extends javax.swing.JApplet {
         btn3i = new javax.swing.JButton();
         lbCerrarSesion = new org.jdesktop.swingx.JXLabel();
         btnCancelarGuardarHuella = new javax.swing.JButton();
+        btnEliminarHuellas = new javax.swing.JButton();
         jpSeleccionarCts = new org.jdesktop.swingx.JXPanel();
         btnSeleccion = new javax.swing.JButton();
         txtAdmin = new javax.swing.JTextField();
@@ -506,7 +510,8 @@ public class ChecadorI extends javax.swing.JApplet {
                 .addGap(75, 75, 75)
                 .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(125, Short.MAX_VALUE))
         );
         jpLoginLayout.setVerticalGroup(
@@ -518,7 +523,9 @@ public class ChecadorI extends javax.swing.JApplet {
                 .addComponent(lbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(cmbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(250, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(txtAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(212, Short.MAX_VALUE))
         );
 
         jpHuellas.setBackground(new java.awt.Color(255, 255, 255));
@@ -726,7 +733,8 @@ public class ChecadorI extends javax.swing.JApplet {
             }
         });
 
-        btnCancelarGuardarHuella.setFont(new java.awt.Font("Arial", 3, 14)); // NOI18N
+        btnCancelarGuardarHuella.setFont(new java.awt.Font("Arial", 3, 12)); // NOI18N
+        btnCancelarGuardarHuella.setForeground(new java.awt.Color(0, 153, 255));
         btnCancelarGuardarHuella.setText("Cancelar");
         btnCancelarGuardarHuella.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnCancelarGuardarHuella.setBorderPainted(false);
@@ -737,48 +745,63 @@ public class ChecadorI extends javax.swing.JApplet {
             }
         });
 
+        btnEliminarHuellas.setFont(new java.awt.Font("Arial", 3, 12)); // NOI18N
+        btnEliminarHuellas.setForeground(new java.awt.Color(0, 153, 255));
+        btnEliminarHuellas.setText("Eliminar Huella");
+        btnEliminarHuellas.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnEliminarHuellas.setBorderPainted(false);
+        btnEliminarHuellas.setContentAreaFilled(false);
+        btnEliminarHuellas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarHuellasActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jpHuellasLayout = new javax.swing.GroupLayout(jpHuellas);
         jpHuellas.setLayout(jpHuellasLayout);
         jpHuellasLayout.setHorizontalGroup(
             jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpHuellasLayout.createSequentialGroup()
-                .addGroup(jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jpHuellasLayout.createSequentialGroup()
-                        .addGap(75, 75, 75)
-                        .addGroup(jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jpHuellasLayout.createSequentialGroup()
-                                .addComponent(lbSelEmp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtEmpleado))
-                            .addComponent(cmbEmpleados, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jpHuellasFondo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCancelarGuardarHuella, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jpHuellasLayout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lbCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(30, 30, 30))
+            .addGroup(jpHuellasLayout.createSequentialGroup()
+                .addGap(75, 75, 75)
+                .addGroup(jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jpHuellasLayout.createSequentialGroup()
+                        .addComponent(lbSelEmp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtEmpleado))
+                    .addComponent(cmbEmpleados, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jpHuellasFondo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnEliminarHuellas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jpHuellasLayout.createSequentialGroup()
+                        .addComponent(lbCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpHuellasLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnCancelarGuardarHuella, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         jpHuellasLayout.setVerticalGroup(
             jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpHuellasLayout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addComponent(lbCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jpHuellasLayout.createSequentialGroup()
-                        .addGap(17, 17, 17)
+                        .addGap(24, 24, 24)
+                        .addComponent(lbCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(84, 84, 84)
+                        .addComponent(btnEliminarHuellas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(167, 167, 167)
+                        .addComponent(btnCancelarGuardarHuella, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jpHuellasLayout.createSequentialGroup()
+                        .addGap(60, 60, 60)
                         .addGroup(jpHuellasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lbSelEmp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cmbEmpleados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(34, 34, 34)
-                        .addComponent(jpHuellasFondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(20, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpHuellasLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCancelarGuardarHuella, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(52, 52, 52))))
+                        .addComponent(jpHuellasFondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(20, 20, 20))
         );
 
         jpSeleccionarCts.setBackground(new java.awt.Color(255, 255, 255));
@@ -1038,6 +1061,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btn2dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2dActionPerformed
         // TODO add your handling code here:
+        if (eliminarHuella.equals("eliminarHuella")) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "¿Seguro que desea eliminar la huella?", "Eliminar", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                eliminarHuella(btn2d.getText());
+                btn2d.setEnabled(false);
+                btnCancelarGuardarHuellaActionPerformed(null);
+            }
+            return;
+        }
         if (status) {
             return;
         }
@@ -1051,6 +1083,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btn1dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1dActionPerformed
         // TODO add your handling code here:
+        if (eliminarHuella.equals("eliminarHuella")) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "¿Seguro que desea eliminar la huella?", "Eliminar", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                eliminarHuella(btn1d.getText());
+                btn1d.setEnabled(false);
+                btnCancelarGuardarHuellaActionPerformed(null);
+            }
+            return;
+        }
         if (status) {
             return;
         }
@@ -1064,6 +1105,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btn3dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3dActionPerformed
         // TODO add your handling code here:
+        if (eliminarHuella.equals("eliminarHuella")) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "¿Seguro que desea eliminar la huella?", "Eliminar", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                eliminarHuella(btn3d.getText());
+                btn3d.setEnabled(false);
+                btnCancelarGuardarHuellaActionPerformed(null);
+            }
+            return;
+        }
         if (status) {
             return;
         }
@@ -1077,6 +1127,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btn4dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4dActionPerformed
         // TODO add your handling code here:
+        if (eliminarHuella.equals("eliminarHuella")) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "¿Seguro que desea eliminar la huella?", "Eliminar", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                eliminarHuella(btn4d.getText());
+                btn4d.setEnabled(false);
+                btnCancelarGuardarHuellaActionPerformed(null);
+            }
+            return;
+        }
         if (status) {
             return;
         }
@@ -1090,6 +1149,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btn5dActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5dActionPerformed
         // TODO add your handling code here:
+        if (eliminarHuella.equals("eliminarHuella")) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "¿Seguro que desea eliminar la huella?", "Eliminar", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                eliminarHuella(btn5d.getText());
+                btn5d.setEnabled(false);
+                btnCancelarGuardarHuellaActionPerformed(null);
+            }
+            return;
+        }
         if (status) {
             return;
         }
@@ -1103,6 +1171,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btn1iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1iActionPerformed
         // TODO add your handling code here:
+        if (eliminarHuella.equals("eliminarHuella")) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "¿Seguro que desea eliminar la huella?", "Eliminar", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                eliminarHuella(btn1i.getText());
+                btn1i.setEnabled(false);
+                btnCancelarGuardarHuellaActionPerformed(null);
+            }
+            return;
+        }
         if (status) {
             return;
         }
@@ -1116,6 +1193,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btn2iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2iActionPerformed
         // TODO add your handling code here:
+        if (eliminarHuella.equals("eliminarHuella")) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "¿Seguro que desea eliminar la huella?", "Eliminar", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                eliminarHuella(btn2i.getText());
+                btn2i.setEnabled(false);
+                btnCancelarGuardarHuellaActionPerformed(null);
+            }
+            return;
+        }
         if (status) {
             return;
         }
@@ -1129,6 +1215,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btn5iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5iActionPerformed
         // TODO add your handling code here:
+        if (eliminarHuella.equals("eliminarHuella")) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "¿Seguro que desea eliminar la huella?", "Eliminar", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                eliminarHuella(btn5i.getText());
+                btn5i.setEnabled(false);
+                btnCancelarGuardarHuellaActionPerformed(null);
+            }
+            return;
+        }
         if (status) {
             return;
         }
@@ -1142,6 +1237,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btn4iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4iActionPerformed
         // TODO add your handling code here:
+        if (eliminarHuella.equals("eliminarHuella")) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "¿Seguro que desea eliminar la huella?", "Eliminar", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                eliminarHuella(btn5i.getText());
+                btn5i.setEnabled(false);
+                btnCancelarGuardarHuellaActionPerformed(null);
+            }
+            return;
+        }
         if (status) {
             return;
         }
@@ -1155,6 +1259,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btn3iActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3iActionPerformed
         // TODO add your handling code here:
+        if (eliminarHuella.equals("eliminarHuella")) {
+            int dialogResult = JOptionPane.showConfirmDialog(null, "¿Seguro que desea eliminar la huella?", "Eliminar", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                eliminarHuella(btn3i.getText());
+                btn3i.setEnabled(false);
+                btnCancelarGuardarHuellaActionPerformed(null);
+            }
+            return;
+        }
         if (status) {
             return;
         }
@@ -1189,6 +1302,22 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btnCancelarGuardarHuellaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarGuardarHuellaActionPerformed
         // TODO add your handling code here:
+        if (eliminarHuella.equals("eliminarHuella")) {
+            btn1d.setEnabled(!btn1d.isEnabled());
+            btn2d.setEnabled(!btn2d.isEnabled());
+            btn3d.setEnabled(!btn3d.isEnabled());
+            btn4d.setEnabled(!btn4d.isEnabled());
+            btn5d.setEnabled(!btn5d.isEnabled());
+            btn1i.setEnabled(!btn1i.isEnabled());
+            btn2i.setEnabled(!btn2i.isEnabled());
+            btn3i.setEnabled(!btn3i.isEnabled());
+            btn4i.setEnabled(!btn4i.isEnabled());
+            btn5i.setEnabled(!btn5i.isEnabled());
+            eliminarHuella = "";
+            status = !status;
+            btnCancelarGuardarHuella.setVisible(false);
+            return;
+        }
         JButton j = dedo;
         Font fuente = new Font("Arial", Font.PLAIN, 14);
         j.setFont(fuente);
@@ -1206,28 +1335,23 @@ public class ChecadorI extends javax.swing.JApplet {
 
         String username = txtAdmin.getText();
         String password = txtPassAdmin.getText();
-        
-        
-        
+
         String rawPassword = "secret";
         DefaultPasswordService passwordService = new DefaultPasswordService();
         String encryptedPassword = passwordService.encryptPassword(rawPassword);
         String hash = passwordService.hashPassword(rawPassword).toString();
 
 //Create the user
-    
         System.out.println("username = " + username);
         System.out.println("encryptedPassword = " + encryptedPassword);
         System.out.println("encryptedPassword.length() = " + encryptedPassword.length());
-        System.out.println("hash = " + hash);        
-        
+        System.out.println("hash = " + hash);
+
         try {
             UsernamePasswordToken userToken = new UsernamePasswordToken(username, rawPassword);
             Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory();
             org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
 
-            
-            
             SecurityUtils.setSecurityManager(securityManager);
             System.out.println("userToken = " + userToken);
             SecurityUtils.getSubject().login(userToken);
@@ -1296,6 +1420,48 @@ public class ChecadorI extends javax.swing.JApplet {
         preferences.putInt("id_ct", id_ct);
         inicio();*/
     }//GEN-LAST:event_btnSeleccionActionPerformed
+
+    private void btnEliminarHuellasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarHuellasActionPerformed
+        // TODO add your handling code here:
+        if (status) {
+            return;
+        }
+        if (cmbEmpleados.getSelectedIndex() == -1) {
+            return;
+        }
+        btn1d.setEnabled(!btn1d.isEnabled());
+        btn2d.setEnabled(!btn2d.isEnabled());
+        btn3d.setEnabled(!btn3d.isEnabled());
+        btn4d.setEnabled(!btn4d.isEnabled());
+        btn5d.setEnabled(!btn5d.isEnabled());
+        btn1i.setEnabled(!btn1i.isEnabled());
+        btn2i.setEnabled(!btn2i.isEnabled());
+        btn3i.setEnabled(!btn3i.isEnabled());
+        btn4i.setEnabled(!btn4i.isEnabled());
+        btn5i.setEnabled(!btn5i.isEnabled());
+        eliminarHuella = "eliminarHuella";
+        status = !status;
+        btnCancelarGuardarHuella.setVisible(true);
+    }//GEN-LAST:event_btnEliminarHuellasActionPerformed
+
+    private void eliminarHuella(String dedoCad) {
+        try {
+            int i = cmbEmpleados.getSelectedIndex();
+            Empleado empleado = empleados.get(i);
+            id_empleado = empleado.getIdEmpleado();
+
+            PreparedStatement consulta;
+            consulta = cn.prepareStatement("DELETE FROM huella where idempleado = ? AND dedomano = ?");
+            consulta.setInt(1, id_empleado);
+            consulta.setString(2, dedoCad);
+            System.out.println("consulta = " + consulta);
+
+            consulta.execute();
+        } catch (SQLException ex) {
+            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
 
     private void inicio() {
         try {
@@ -1679,7 +1845,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                 ps.setInt(1, id_empleado);
                                 ps.setString(2, fecha);
                                 ps.setInt(3, id_ct);
-                                ps.setString(4, "SALIDA");
+                                ps.setString(4, SALIDA);
                                 ps.setString(5, tipo);
                                 ps.executeUpdate();
 
@@ -1697,7 +1863,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                     ps.executeUpdate();
                                 }
 
-                                bienvenido(id_empleado, fecha, id_ct, "SALIDA", tipo);
+                                bienvenido(id_empleado, fecha, id_ct, SALIDA, tipo);
                             } else {
                                 System.out.println("entrada");
                                 Time horaEComparar = new Time(Integer.parseInt(fecha.substring(11, 13)), Integer.parseInt(fecha.substring(14, 16)), Integer.parseInt(fecha.substring(17, 19)));
@@ -1710,7 +1876,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                 ps.setInt(1, id_empleado);
                                 ps.setString(2, fecha);
                                 ps.setInt(3, id_ct);
-                                ps.setString(4, "ENTRADA");
+                                ps.setString(4, ENTRADA);
                                 ps.setString(5, tipo);
                                 ps.executeUpdate();
 
@@ -1728,7 +1894,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                     ps.executeUpdate();
                                 }
 
-                                bienvenido(id_empleado, fecha, id_ct, "ENTRADA", tipo);
+                                bienvenido(id_empleado, fecha, id_ct, ENTRADA, tipo);
                                 empleados();
                             }
                             /////////////////////
@@ -1764,7 +1930,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                     ps.setInt(1, id_empleado);
                                     ps.setString(2, fecha);
                                     ps.setInt(3, id_ct);
-                                    ps.setString(4, "ENTRADA");
+                                    ps.setString(4, ENTRADA);
                                     ps.setString(5, tipo);
                                     ps.execute();
 
@@ -1782,7 +1948,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                         ps.executeUpdate();
                                     }
 
-                                    bienvenido(id_empleado, fecha, id_ct, "ENTRADA", tipo);
+                                    bienvenido(id_empleado, fecha, id_ct, ENTRADA, tipo);
                                     empleados();
                                     break;
                                 case 1:
@@ -1796,7 +1962,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                     ps.setInt(1, id_empleado);
                                     ps.setString(2, fecha);
                                     ps.setInt(3, id_ct);
-                                    ps.setString(4, "SALIDA");
+                                    ps.setString(4, SALIDA);
                                     ps.setString(5, tipo);
                                     ps.executeUpdate();
 
@@ -1813,7 +1979,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                         ps.setInt(2, id_permiso);
                                         ps.executeUpdate();
                                     }
-                                    bienvenido(id_empleado, fecha, id_ct, "SALIDA", tipo);
+                                    bienvenido(id_empleado, fecha, id_ct, SALIDA, tipo);
                                     break;
                                 case 2:
                                     System.out.println("entrada_v");
@@ -1830,7 +1996,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                     ps.setInt(1, id_empleado);
                                     ps.setString(2, fecha);
                                     ps.setInt(3, id_ct);
-                                    ps.setString(4, "ENTRADA");
+                                    ps.setString(4, ENTRADA);
                                     ps.setString(5, tipo);
                                     ps.executeUpdate();
 
@@ -1848,7 +2014,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                         ps.executeUpdate();
                                     }
 
-                                    bienvenido(id_empleado, fecha, id_ct, "ENTRADA", tipo);
+                                    bienvenido(id_empleado, fecha, id_ct, ENTRADA, tipo);
                                     break;
                                 case 3:
                                     System.out.println("salida_v");
@@ -1861,7 +2027,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                     ps.setInt(1, id_empleado);
                                     ps.setString(2, fecha);
                                     ps.setInt(3, id_ct);
-                                    ps.setString(4, "SALIDA");
+                                    ps.setString(4, SALIDA);
                                     ps.setString(5, tipo);
                                     ps.executeUpdate();
 
@@ -1879,7 +2045,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                         ps.executeUpdate();
                                     }
 
-                                    bienvenido(id_empleado, fecha, id_ct, "SALIDA", tipo);
+                                    bienvenido(id_empleado, fecha, id_ct, SALIDA, tipo);
                                     break;
                             }
                         }
@@ -1935,7 +2101,7 @@ public class ChecadorI extends javax.swing.JApplet {
         }
         if (p != null) {
             horaDBComparar = p.getHora_reinicio();
-            datos[1] = "PERMISO";
+            datos[1] = PERMISO;
             datos[2] = String.valueOf(p.getId_permiso());
         }
         if (horaEComparar.before(horaDBComparar)) {
@@ -1946,7 +2112,7 @@ public class ChecadorI extends javax.swing.JApplet {
 
         Time t = new Time(horaEComparar.getTime() - horaDBComparar.getTime());
         if (t.getHours() != 18) {
-            d = "FALTA";
+            d = FALTA;
             datos[0] = d;
             return datos;
         }
@@ -1956,11 +2122,11 @@ public class ChecadorI extends javax.swing.JApplet {
             return datos;
         }
         if (t.getMinutes() < minutos_retardo) {
-            d = "RETARDO";
+            d = RETARDO;
             datos[0] = d;
             return datos;
         }
-        d = "FALTA";
+        d = FALTA;
         datos[0] = d;
         return datos;
     }
@@ -2006,7 +2172,7 @@ public class ChecadorI extends javax.swing.JApplet {
 
         if (p != null) {
             horaDBComparar = p.getHora_inicio();
-            datos[1] = "PERMISO";
+            datos[1] = PERMISO;
             datos[2] = String.valueOf(p.getId_permiso());
         }
 
@@ -2021,7 +2187,7 @@ public class ChecadorI extends javax.swing.JApplet {
             datos[0] = d;
             return datos;
         }
-        d = "ANTICIPADA";
+        d = ANTICIPADA;
         datos[0] = d;
         return datos;
     }
@@ -2050,10 +2216,10 @@ public class ChecadorI extends javax.swing.JApplet {
 
                 Empleado e = new Empleado(idEmpleado, nombre, apPaterno, apMaterno, rfc, idct);
 
-                if (movimiento.equals("ENTRADA")) {
+                if (movimiento.equals(ENTRADA)) {
                     lbBienvenido.setText("Bienvenido:");
                 }
-                if (movimiento.equals("SALIDA")) {
+                if (movimiento.equals(SALIDA)) {
                     lbBienvenido.setText("Adios:");
                 }
                 lbEmpleado.setText("<html><p>" + e.toString() + "</p></html>");
@@ -2079,7 +2245,40 @@ public class ChecadorI extends javax.swing.JApplet {
         if (activo && adminActivo) {
             try {
                 PreparedStatement consulta;
-                int aux_id_empleado = admins.get(cmbAdmin.getSelectedIndex()).getIdEmpleado();
+                String cadAdmin = txtAdministrador.getText();
+                consulta = cn.prepareStatement("SELECT idempleado FROM sis_usuarios WHERE usuario = ?");
+                consulta.setString(1, cadAdmin);
+                ResultSet resultado = consulta.executeQuery();
+                int aux_id_empleado = 0;
+                if(resultado.next()){
+                    aux_id_empleado = resultado.getInt("idempleado");
+                }
+                consulta = cn.prepareStatement("SELECT * FROM huella WHERE idempleado = ?");
+                consulta.setInt(1, aux_id_empleado);
+                resultado = consulta.executeQuery();
+                while (resultado.next()) {
+                    byte templateBuffer[] = resultado.getBytes("huella");
+                    if (dp.verificarHuella(templateBuffer)) {
+                        checar++;
+                        cuentaActiva = true;
+                        timerLogin.shutdown();
+                        //status = false;
+                        estaLogin = 0;
+                        taparTodo();
+                        jpSection.setVisible(true);
+                        jpFondo.setVisible(true);
+                        jpHuellas.setVisible(true);
+                        huellas();
+                        txtEmpleado.setText("");
+                    }
+                }
+                if (checar == 0 && activo) {
+                    dp.setActivo(false);
+                    dp.clear();
+                    JOptionPane.showOptionDialog(null, "Acceso denegado", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
+                }
+                
+                /*int aux_id_empleado = admins.get(cmbAdmin.getSelectedIndex()).getIdEmpleado();
                 consulta = cn.prepareStatement("SELECT * FROM huella WHERE idempleado = ?");
                 consulta.setInt(1, aux_id_empleado);
                 ResultSet resultado = consulta.executeQuery();
@@ -2103,7 +2302,7 @@ public class ChecadorI extends javax.swing.JApplet {
                     dp.setActivo(false);
                     dp.clear();
                     JOptionPane.showOptionDialog(null, "Acceso denegado", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
-                }
+                }*/
 
             } catch (SQLException ex) {
                 Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
@@ -2351,6 +2550,7 @@ public class ChecadorI extends javax.swing.JApplet {
     private javax.swing.JButton btn5d;
     private javax.swing.JButton btn5i;
     private javax.swing.JButton btnCancelarGuardarHuella;
+    private javax.swing.JButton btnEliminarHuellas;
     private javax.swing.JButton btnSeleccion;
     private javax.swing.JComboBox<String> cmbAdmin;
     private javax.swing.JComboBox<String> cmbEmpleados;
@@ -2388,6 +2588,7 @@ public class ChecadorI extends javax.swing.JApplet {
     private org.jdesktop.swingx.JXLabel lbTitulo;
     private javax.swing.JPopupMenu pmMenu;
     private javax.swing.JTextField txtAdmin;
+    private javax.swing.JTextField txtAdministrador;
     private javax.swing.JTextField txtEmpleado;
     private javax.swing.JPasswordField txtPassAdmin;
     // End of variables declaration//GEN-END:variables
