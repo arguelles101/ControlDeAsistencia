@@ -570,7 +570,13 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="lbAdmin" min="-2" max="-2" attributes="0"/>
                               <Component id="cmbAdmin" min="-2" pref="400" max="-2" attributes="0"/>
-                              <Component id="txtAdministrador" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
+                              <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                                  <Component id="btnAcceder" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                      <Component id="txtPassAdministrador" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="txtAdministrador" alignment="0" pref="150" max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
                           </Group>
                           <EmptySpace pref="125" max="32767" attributes="0"/>
                       </Group>
@@ -587,7 +593,11 @@
                           <Component id="cmbAdmin" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="txtAdministrador" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="212" max="32767" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="txtPassAdministrador" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="btnAcceder" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace pref="133" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -634,6 +644,16 @@
                   </Events>
                 </Component>
                 <Component class="javax.swing.JTextField" name="txtAdministrador">
+                </Component>
+                <Component class="javax.swing.JPasswordField" name="txtPassAdministrador">
+                </Component>
+                <Component class="javax.swing.JButton" name="btnAcceder">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Acceder"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAccederActionPerformed"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>

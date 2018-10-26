@@ -14,6 +14,7 @@ import com.ieepo.checador.model.Empleado;
 import com.ieepo.checador.model.Horario;
 import com.ieepo.checador.model.HorarioEmpleado;
 import com.ieepo.checador.model.Permiso;
+import com.ieepo.checador.security.Authenticator;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -41,16 +42,12 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.ExcessiveAttemptsException;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.LockedAccountException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
-import org.apache.shiro.config.IniSecurityManagerFactory;
-import org.apache.shiro.util.Factory;
+import org.apache.shiro.crypto.hash.DefaultHashService;
+import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -215,6 +212,8 @@ public class ChecadorI extends javax.swing.JApplet {
         lbAdmin = new org.jdesktop.swingx.JXLabel();
         lbRegresar = new org.jdesktop.swingx.JXLabel();
         txtAdministrador = new javax.swing.JTextField();
+        txtPassAdministrador = new javax.swing.JPasswordField();
+        btnAcceder = new javax.swing.JButton();
         jpHuellas = new org.jdesktop.swingx.JXPanel();
         lbSelEmp = new org.jdesktop.swingx.JXLabel();
         txtEmpleado = new javax.swing.JTextField();
@@ -498,6 +497,13 @@ public class ChecadorI extends javax.swing.JApplet {
             }
         });
 
+        btnAcceder.setText("Acceder");
+        btnAcceder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAccederActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jpLoginLayout = new javax.swing.GroupLayout(jpLogin);
         jpLogin.setLayout(jpLoginLayout);
         jpLoginLayout.setHorizontalGroup(
@@ -511,7 +517,11 @@ public class ChecadorI extends javax.swing.JApplet {
                 .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cmbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(btnAcceder)
+                        .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(txtPassAdministrador, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtAdministrador, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))))
                 .addContainerGap(125, Short.MAX_VALUE))
         );
         jpLoginLayout.setVerticalGroup(
@@ -525,7 +535,11 @@ public class ChecadorI extends javax.swing.JApplet {
                 .addComponent(cmbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(txtAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(212, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(txtPassAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnAcceder)
+                .addContainerGap(133, Short.MAX_VALUE))
         );
 
         jpHuellas.setBackground(new java.awt.Color(255, 255, 255));
@@ -1336,7 +1350,7 @@ public class ChecadorI extends javax.swing.JApplet {
         String username = txtAdmin.getText();
         String password = txtPassAdmin.getText();
 
-        String rawPassword = "secret";
+        /*String rawPassword = "secret";
         DefaultPasswordService passwordService = new DefaultPasswordService();
         String encryptedPassword = passwordService.encryptPassword(rawPassword);
         String hash = passwordService.hashPassword(rawPassword).toString();
@@ -1413,7 +1427,7 @@ public class ChecadorI extends javax.swing.JApplet {
             JOptionPane.showMessageDialog(rootPane, "Could not authenticate user");
             //System.out.println("Could not authenticate user");
         }
-
+*/
         /*Preferences preferences = Preferences.userNodeForPackage(ChecadorI.class);
 
         preferences.putBoolean("id_ct", true);
@@ -1443,6 +1457,170 @@ public class ChecadorI extends javax.swing.JApplet {
         status = !status;
         btnCancelarGuardarHuella.setVisible(true);
     }//GEN-LAST:event_btnEliminarHuellasActionPerformed
+
+    private void btnAccederActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAccederActionPerformed
+        // TODO add your handling code here:
+        
+        String user = txtAdministrador.getText();
+        String pass = String.copyValueOf(txtPassAdministrador.getPassword());
+        
+        /*
+        Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");
+        SecurityManager securityManager = factory.getInstance();
+        SecurityUtils.setSecurityManager(securityManager);
+        
+        Subject currentUser = SecurityUtils.getSubject();
+        
+        Session session = currentUser.getSession();
+        session.setAttribute("someKey", "aValue");
+        
+        if (!currentUser.isAuthenticated()) {
+            //collect user principals and credentials in a gui specific manner
+            //such as username/password html form, X509 certificate, OpenID, etc.
+            //We'll use the username/password example here since it is the most common.
+            UsernamePasswordToken token = new UsernamePasswordToken(user, pass);
+
+            //this is all you have to do to support 'remember me' (no config - built in!):
+            //token.setRememberMe(true);
+
+            try {
+                currentUser.login(token);
+                //if no exception, that's it, we're done!
+            } catch (UnknownAccountException uae) {
+                System.out.println("uae = " + uae);
+                //username wasn't in the system, show them an error message?
+            } catch (IncorrectCredentialsException ice) {
+                System.out.println("ice = " + ice);
+                //password didn't match, try again?
+            } catch (LockedAccountException lae) {
+                System.out.println("lae = " + lae);
+                //account for that username is locked - can't login.  Show them a message?
+            } catch (AuthenticationException ae) {
+                System.out.println("ae = " + ae);
+                //unexpected condition - error?
+            }
+        }
+        
+        //say who they are:
+        //print their identifying principal (in this case, a username):
+        System.out.println("User [" + currentUser.getPrincipal() + "] logged in successfully.");
+
+        /*
+        //test a role:
+        if (currentUser.hasRole("schwartz")) {
+            System.out.println("May the Schwartz be with you!");
+        } else {
+            System.out.println("Hello, mere mortal.");
+        }
+
+        //test a typed permission (not instance-level)
+        if (currentUser.isPermitted("lightsaber:weild")) {
+            System.out.println("You may use a lightsaber ring.  Use it wisely.");
+        } else {
+            System.out.println("Sorry, lightsaber rings are for schwartz masters only.");
+        }
+
+        //a (very powerful) Instance Level permission:
+        if (currentUser.isPermitted("winnebago:drive:eagle5")) {
+            System.out.println("You are permitted to 'drive' the winnebago with license plate (id) 'eagle5'.  " +
+                    "Here are the keys - have fun!");
+        } else {
+            System.out.println("Sorry, you aren't allowed to drive the 'eagle5' winnebago!");
+        }*/
+        
+        
+        
+        
+        /*Realm realm = new JdbcRealm();
+        realm = new Realm() {
+            @Override
+            public String getName() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public boolean supports(AuthenticationToken at) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public AuthenticationInfo getAuthenticationInfo(AuthenticationToken at) throws AuthenticationException {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        };
+        SecurityManager sm = new DefaultSecurityManager(realm);
+        UsernamePasswordToken token = new UsernamePasswordToken(user, pass);
+        //token.setRememberMe(true);
+        SecurityUtils.setSecurityManager(sm);
+        Subject currentUser = SecurityUtils.getSubject();
+        try {
+            currentUser.login(token);
+            //if no exception, that's it, we're done!
+        } catch (UnknownAccountException uae) {
+            System.out.println("uae = " + uae);
+            //username wasn't in the system, show them an error message?
+        } catch (IncorrectCredentialsException ice) {
+            System.out.println("ice = " + ice);
+            //password didn't match, try again?
+        } catch (LockedAccountException lae) {
+            System.out.println("lae = " + lae);
+            //account for that username is locked - can't login.  Show them a message?
+        } catch (AuthenticationException ae) {
+            System.out.println("ae = " + ae);
+            System.out.println("ae.getCause() = " + ae.getCause());
+            //unexpected condition - error?
+        }*/
+        
+        
+        //Logger log = (Logger) LoggerFactory.getLogger(ChecadorI.class);  
+        //long serialVersionUID = -4299087640201088650L;
+        Authenticator authenticator;
+        Subject currentUser;
+        Session session;
+        
+        authenticator = new Authenticator();
+
+        currentUser = authenticator.authenticate(user,pass);
+        System.out.println("currentUser = " + currentUser);
+        
+        
+        //DefaultPasswordService passwordService = new DefaultPasswordService();
+        //String encryptedPassword = passwordService.encryptPassword(pass);
+        //String hash = passwordService.hashPassword(rawPassword).toString();
+        DefaultHashService hashService = new DefaultHashService();
+        hashService.setHashIterations(500000);
+        hashService.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);
+        hashService.setGeneratePublicSalt(true);
+
+        DefaultPasswordService passwordService = new DefaultPasswordService();
+        passwordService.setHashService(hashService);
+        String encryptedPassword = passwordService.encryptPassword("admin1234");
+        
+        System.out.println(encryptedPassword);
+	String salt = RandomStringUtils.randomAlphanumeric(20);
+        System.out.println(new Sha256Hash("admin1234", salt).toHex());
+        
+
+        if (currentUser.isAuthenticated()) {
+            session = currentUser.getSession();
+
+            //Storing some attributes
+            session.setAttribute("Connected", "yes");
+
+            //Retrieving attributes later on 
+            String attribute = session.getAttribute("Connected").toString();
+
+            System.out.println("Connected : " + attribute);
+            //btnLogin.setText("Logout");
+            //txtUsername.setEnabled(false);
+            //txtPassword.setEnabled(false);
+            JOptionPane.showMessageDialog(rootPane,"Login Success!!!");
+        } else {
+            JOptionPane.showMessageDialog(rootPane,"Could not authenticate user");
+            //System.out.println("Could not authenticate user");
+        }
+        
+    }//GEN-LAST:event_btnAccederActionPerformed
 
     private void eliminarHuella(String dedoCad) {
         try {
@@ -2549,6 +2727,7 @@ public class ChecadorI extends javax.swing.JApplet {
     private javax.swing.JButton btn4i;
     private javax.swing.JButton btn5d;
     private javax.swing.JButton btn5i;
+    private javax.swing.JButton btnAcceder;
     private javax.swing.JButton btnCancelarGuardarHuella;
     private javax.swing.JButton btnEliminarHuellas;
     private javax.swing.JButton btnSeleccion;
@@ -2591,6 +2770,7 @@ public class ChecadorI extends javax.swing.JApplet {
     private javax.swing.JTextField txtAdministrador;
     private javax.swing.JTextField txtEmpleado;
     private javax.swing.JPasswordField txtPassAdmin;
+    private javax.swing.JPasswordField txtPassAdministrador;
     // End of variables declaration//GEN-END:variables
 
 }
