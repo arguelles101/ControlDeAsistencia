@@ -8,13 +8,11 @@ package com.ieepo.checador;
 import static com.digitalpersona.onetouch.processing.DPFPTemplateStatus.TEMPLATE_STATUS_READY;
 import com.ieepo.checador.components.Imagen;
 import com.ieepo.checador.db.ConnectionBD;
-import com.ieepo.checador.model.AdminCt;
 import com.ieepo.checador.model.Ct;
 import com.ieepo.checador.model.Empleado;
 import com.ieepo.checador.model.Horario;
 import com.ieepo.checador.model.HorarioEmpleado;
 import com.ieepo.checador.model.Permiso;
-import com.ieepo.checador.security.Authenticator;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -39,15 +37,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.crypto.hash.DefaultHashService;
 import org.apache.shiro.crypto.hash.Sha256Hash;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -150,16 +146,16 @@ public class ChecadorI extends javax.swing.JApplet {
                 jpLogoPng.add(iii);
                 jpLogoPng.repaint();
 
-                //if (preferences.getInt("id_ct", -1) == -1) {
-                //taparTodo();
-                //jpSection.setVisible(true);
-                //jpFondo.setVisible(true);
-                //jpSeleccionarCts.setVisible(true);
-                //cargarCts("");
-                //} else {
-                //  id_ct = preferences.getInt("id_ct", -1);
-                inicio();
-                //}
+                if (preferences.getInt("id_ct", -1) == -1) {
+                    taparTodo();
+                    jpSection.setVisible(true);
+                    jpFondo.setVisible(true);
+                    jpSeleccionarCts.setVisible(true);
+                    cargarCts("");
+                } else {
+                    id_ct = preferences.getInt("id_ct", -1);
+                    inicio();
+                }
             });
         } catch (InterruptedException | InvocationTargetException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
@@ -208,12 +204,12 @@ public class ChecadorI extends javax.swing.JApplet {
         lbMenu = new org.jdesktop.swingx.JXLabel();
         jpFondo = new org.jdesktop.swingx.JXPanel();
         jpLogin = new org.jdesktop.swingx.JXPanel();
-        cmbAdmin = new javax.swing.JComboBox<>();
         lbAdmin = new org.jdesktop.swingx.JXLabel();
         lbRegresar = new org.jdesktop.swingx.JXLabel();
         txtAdministrador = new javax.swing.JTextField();
         txtPassAdministrador = new javax.swing.JPasswordField();
         btnAcceder = new javax.swing.JButton();
+        lbPass = new org.jdesktop.swingx.JXLabel();
         jpHuellas = new org.jdesktop.swingx.JXPanel();
         lbSelEmp = new org.jdesktop.swingx.JXLabel();
         txtEmpleado = new javax.swing.JTextField();
@@ -482,10 +478,8 @@ public class ChecadorI extends javax.swing.JApplet {
         jpLogin.setBackground(new java.awt.Color(255, 255, 255));
         jpLogin.setPreferredSize(new java.awt.Dimension(600, 400));
 
-        cmbAdmin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         lbAdmin.setForeground(new java.awt.Color(51, 153, 255));
-        lbAdmin.setText("Seleccione al administrador:");
+        lbAdmin.setText("Administrador");
         lbAdmin.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
 
         lbRegresar.setForeground(new java.awt.Color(51, 153, 255));
@@ -497,12 +491,22 @@ public class ChecadorI extends javax.swing.JApplet {
             }
         });
 
+        txtPassAdministrador.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPassAdministradorKeyReleased(evt);
+            }
+        });
+
         btnAcceder.setText("Acceder");
         btnAcceder.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAccederActionPerformed(evt);
             }
         });
+
+        lbPass.setForeground(new java.awt.Color(51, 153, 255));
+        lbPass.setText("Contraseña");
+        lbPass.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout jpLoginLayout = new javax.swing.GroupLayout(jpLogin);
         jpLogin.setLayout(jpLoginLayout);
@@ -513,33 +517,35 @@ public class ChecadorI extends javax.swing.JApplet {
                 .addComponent(lbRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30))
             .addGroup(jpLoginLayout.createSequentialGroup()
-                .addGap(75, 75, 75)
-                .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(btnAcceder)
-                        .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtPassAdministrador, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtAdministrador, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))))
-                .addContainerGap(125, Short.MAX_VALUE))
+                .addGap(150, 150, 150)
+                .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnAcceder)
+                    .addGroup(jpLoginLayout.createSequentialGroup()
+                        .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lbPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtPassAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(203, Short.MAX_VALUE))
         );
         jpLoginLayout.setVerticalGroup(
             jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpLoginLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(lbRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(59, 59, 59)
-                .addComponent(lbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(cmbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(txtAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(txtPassAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(85, 85, 85)
+                .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(31, 31, 31)
+                .addGroup(jpLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtPassAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(57, 57, 57)
                 .addComponent(btnAcceder)
-                .addContainerGap(133, Short.MAX_VALUE))
+                .addContainerGap(128, Short.MAX_VALUE))
         );
 
         jpHuellas.setBackground(new java.awt.Color(255, 255, 255));
@@ -924,57 +930,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void AccederActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AccederActionPerformed
         // TODO add your handling code here:
+        txtAdministrador.setText("");
+        txtPassAdministrador.setText("");
+        txtAdministrador.requestFocus();
+
         taparTodo();
         jpFondo.setVisible(true);
         jpSection.setVisible(true);
         jpLogin.setVisible(true);
 
-        PreparedStatement consulta;
-
-        admins = new ArrayList<>();
-        try {
-            consulta = cn.prepareStatement("SELECT * FROM admincts WHERE idct = ?");
-            consulta.setInt(1, id_ct);
-            ResultSet resultado = consulta.executeQuery();
-
-            while (resultado.next()) {
-                int id_admin_ct;
-
-                id_admin_ct = resultado.getInt("idadmin");
-                id_empleado = resultado.getInt("idempleado");
-
-                AdminCt a = new AdminCt(id_admin_ct, id_empleado, id_ct);
-                consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idempleado = ?");
-                consulta.setInt(1, a.getId_empleado());
-                ResultSet resultadoEmpleados = consulta.executeQuery();
-
-                while (resultadoEmpleados.next()) {
-                    int idEmpleado;
-                    String nombre;
-                    String apPaterno;
-                    String apMaterno;
-                    String rfc;
-                    int idct;
-
-                    idEmpleado = resultadoEmpleados.getInt("idempleado");
-                    nombre = resultadoEmpleados.getString("nombre").trim();
-                    apPaterno = resultadoEmpleados.getString("apPaterno").trim();
-                    apMaterno = resultadoEmpleados.getString("apMaterno").trim();
-                    rfc = resultadoEmpleados.getString("rfc").trim();
-                    idct = resultadoEmpleados.getInt("idct");
-
-                    Empleado e = new Empleado(idEmpleado, nombre, apPaterno, apMaterno, rfc, idct);
-                    admins.add(e);
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        cmbAdmin.removeAllItems();
-        admins.forEach((admin) -> {
-            cmbAdmin.addItem(admin.toString());
-        });
         adminActivo = true;
         estaLogin = 1;
         checar = validarAdmin(0, estaLogin);
@@ -1349,90 +1313,45 @@ public class ChecadorI extends javax.swing.JApplet {
 
         String username = txtAdmin.getText();
         String password = txtPassAdmin.getText();
-
-        /*String rawPassword = "secret";
-        DefaultPasswordService passwordService = new DefaultPasswordService();
-        String encryptedPassword = passwordService.encryptPassword(rawPassword);
-        String hash = passwordService.hashPassword(rawPassword).toString();
-
-//Create the user
-        System.out.println("username = " + username);
-        System.out.println("encryptedPassword = " + encryptedPassword);
-        System.out.println("encryptedPassword.length() = " + encryptedPassword.length());
-        System.out.println("hash = " + hash);
-
-        try {
-            UsernamePasswordToken userToken = new UsernamePasswordToken(username, rawPassword);
-            Factory<org.apache.shiro.mgt.SecurityManager> factory = new IniSecurityManagerFactory();
-            org.apache.shiro.mgt.SecurityManager securityManager = factory.getInstance();
-
-            SecurityUtils.setSecurityManager(securityManager);
-            System.out.println("userToken = " + userToken);
-            SecurityUtils.getSubject().login(userToken);
-        } catch (UnknownAccountException uae) {
-            System.out.println("uae = " + uae);
-        } catch (IncorrectCredentialsException ice) {
-            System.out.println("ice = " + ice);
-        } catch (LockedAccountException lae) {
-            System.out.println("lae = " + lae);
-        } catch (ExcessiveAttemptsException eae) {
-            System.out.println("eae = " + eae);
-        } catch (AuthenticationException ae) {
-            System.out.println("ae = " + ae);
-        } catch (Exception ex) {
-            System.out.println("ex = " + ex);
-        }
-        System.out.println("si");
-
-        /*Authenticator authenticator = new Authenticator();
-
-        Subject currentUser = authenticator.authenticate(userName, password);
-
+        
         DefaultHashService hashService = new DefaultHashService();
-        hashService.setHashIterations(50000);
+        hashService.setHashIterations(500000);
         hashService.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);
         hashService.setGeneratePublicSalt(true);
 
         DefaultPasswordService passwordService = new DefaultPasswordService();
         passwordService.setHashService(hashService);
-        String encryptedPassword = passwordService.encryptPassword("admin1234");
-        
 
-        System.out.println("encryptedPassword = " + encryptedPassword);
-        encryptedPassword = passwordService.encryptPassword("admin1234");
-        System.out.println("encryptedPassword = " + encryptedPassword);
-        encryptedPassword = passwordService.encryptPassword("admin1234");
-        System.out.println("encryptedPassword = " + encryptedPassword);
-        encryptedPassword = passwordService.encryptPassword("admin1234");
-        System.out.println("encryptedPassword = " + encryptedPassword);
+        try {
+            String passSave = "";
 
-        
- 
-        
-        
+            PreparedStatement consulta;
+            consulta = cn.prepareStatement("SELECT * FROM sis_usuarios WHERE usuario = BINARY ?");
+            consulta.setString(1, username);
+            ResultSet resultado = consulta.executeQuery();
+            int id_ct_aux = 0;
+            if (resultado.next()) {
+                passSave = resultado.getString("pass");
+                id_ct_aux = resultado.getInt("idct");
+            }
 
-        if (currentUser.isAuthenticated()) {
-            Session session = currentUser.getSession();
+            if (passwordService.passwordsMatch(password, passSave)) {
+                Preferences preferences = Preferences.userNodeForPackage(ChecadorI.class);
 
-            //Storing some attributes
-            session.setAttribute("Connected", "yes");
-
-            //Retrieving attributes later on 
-            String attribute = session.getAttribute("Connected").toString();
-
-            System.out.println("Connected : " + attribute);
-
-            JOptionPane.showMessageDialog(rootPane, "Login Success!!!");
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "Could not authenticate user");
-            //System.out.println("Could not authenticate user");
+                preferences.putBoolean("id_ct", true);
+                preferences.putInt("id_ct", id_ct_aux);
+                taparTodo();
+                jpSection.setVisible(true);
+                jpChecador.setVisible(true);
+                inicio();
+            } else {
+                JOptionPane.showOptionDialog(null, "Acceso denegado", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
-*/
-        /*Preferences preferences = Preferences.userNodeForPackage(ChecadorI.class);
-
-        preferences.putBoolean("id_ct", true);
-        preferences.putInt("id_ct", id_ct);
-        inicio();*/
+        
+ /**/
     }//GEN-LAST:event_btnSeleccionActionPerformed
 
     private void btnEliminarHuellasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarHuellasActionPerformed
@@ -1460,130 +1379,16 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void btnAccederActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAccederActionPerformed
         // TODO add your handling code here:
-        
+
         String user = txtAdministrador.getText();
         String pass = String.copyValueOf(txtPassAdministrador.getPassword());
-        
-        /*
-        Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");
-        SecurityManager securityManager = factory.getInstance();
-        SecurityUtils.setSecurityManager(securityManager);
-        
-        Subject currentUser = SecurityUtils.getSubject();
-        
-        Session session = currentUser.getSession();
-        session.setAttribute("someKey", "aValue");
-        
-        if (!currentUser.isAuthenticated()) {
-            //collect user principals and credentials in a gui specific manner
-            //such as username/password html form, X509 certificate, OpenID, etc.
-            //We'll use the username/password example here since it is the most common.
-            UsernamePasswordToken token = new UsernamePasswordToken(user, pass);
 
-            //this is all you have to do to support 'remember me' (no config - built in!):
-            //token.setRememberMe(true);
-
-            try {
-                currentUser.login(token);
-                //if no exception, that's it, we're done!
-            } catch (UnknownAccountException uae) {
-                System.out.println("uae = " + uae);
-                //username wasn't in the system, show them an error message?
-            } catch (IncorrectCredentialsException ice) {
-                System.out.println("ice = " + ice);
-                //password didn't match, try again?
-            } catch (LockedAccountException lae) {
-                System.out.println("lae = " + lae);
-                //account for that username is locked - can't login.  Show them a message?
-            } catch (AuthenticationException ae) {
-                System.out.println("ae = " + ae);
-                //unexpected condition - error?
-            }
-        }
-        
-        //say who they are:
-        //print their identifying principal (in this case, a username):
-        System.out.println("User [" + currentUser.getPrincipal() + "] logged in successfully.");
-
-        /*
-        //test a role:
-        if (currentUser.hasRole("schwartz")) {
-            System.out.println("May the Schwartz be with you!");
-        } else {
-            System.out.println("Hello, mere mortal.");
-        }
-
-        //test a typed permission (not instance-level)
-        if (currentUser.isPermitted("lightsaber:weild")) {
-            System.out.println("You may use a lightsaber ring.  Use it wisely.");
-        } else {
-            System.out.println("Sorry, lightsaber rings are for schwartz masters only.");
-        }
-
-        //a (very powerful) Instance Level permission:
-        if (currentUser.isPermitted("winnebago:drive:eagle5")) {
-            System.out.println("You are permitted to 'drive' the winnebago with license plate (id) 'eagle5'.  " +
-                    "Here are the keys - have fun!");
-        } else {
-            System.out.println("Sorry, you aren't allowed to drive the 'eagle5' winnebago!");
-        }*/
-        
-        
-        
-        
-        /*Realm realm = new JdbcRealm();
-        realm = new Realm() {
-            @Override
-            public String getName() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public boolean supports(AuthenticationToken at) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public AuthenticationInfo getAuthenticationInfo(AuthenticationToken at) throws AuthenticationException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        };
-        SecurityManager sm = new DefaultSecurityManager(realm);
-        UsernamePasswordToken token = new UsernamePasswordToken(user, pass);
-        //token.setRememberMe(true);
-        SecurityUtils.setSecurityManager(sm);
-        Subject currentUser = SecurityUtils.getSubject();
-        try {
-            currentUser.login(token);
-            //if no exception, that's it, we're done!
-        } catch (UnknownAccountException uae) {
-            System.out.println("uae = " + uae);
-            //username wasn't in the system, show them an error message?
-        } catch (IncorrectCredentialsException ice) {
-            System.out.println("ice = " + ice);
-            //password didn't match, try again?
-        } catch (LockedAccountException lae) {
-            System.out.println("lae = " + lae);
-            //account for that username is locked - can't login.  Show them a message?
-        } catch (AuthenticationException ae) {
-            System.out.println("ae = " + ae);
-            System.out.println("ae.getCause() = " + ae.getCause());
-            //unexpected condition - error?
-        }*/
-        
-        
-        //Logger log = (Logger) LoggerFactory.getLogger(ChecadorI.class);  
-        //long serialVersionUID = -4299087640201088650L;
-        Authenticator authenticator;
-        Subject currentUser;
-        Session session;
-        
-        authenticator = new Authenticator();
-
-        currentUser = authenticator.authenticate(user,pass);
-        System.out.println("currentUser = " + currentUser);
-        
-        
+        //Authenticator authenticator;
+        //Subject currentUser;
+        //Session session;
+        //authenticator = new Authenticator();
+        //currentUser = authenticator.authenticate(user, pass);
+        //System.out.println("currentUser = " + currentUser);
         //DefaultPasswordService passwordService = new DefaultPasswordService();
         //String encryptedPassword = passwordService.encryptPassword(pass);
         //String hash = passwordService.hashPassword(rawPassword).toString();
@@ -1594,33 +1399,43 @@ public class ChecadorI extends javax.swing.JApplet {
 
         DefaultPasswordService passwordService = new DefaultPasswordService();
         passwordService.setHashService(hashService);
-        String encryptedPassword = passwordService.encryptPassword("admin1234");
-        
-        System.out.println(encryptedPassword);
-	String salt = RandomStringUtils.randomAlphanumeric(20);
-        System.out.println(new Sha256Hash("admin1234", salt).toHex());
-        
 
-        if (currentUser.isAuthenticated()) {
-            session = currentUser.getSession();
+        try {
+            String passSave = "";
 
-            //Storing some attributes
-            session.setAttribute("Connected", "yes");
+            PreparedStatement consulta;
+            consulta = cn.prepareStatement("SELECT pass FROM sis_usuarios WHERE usuario = BINARY ? AND idct = ?");
+            consulta.setString(1, user);
+            consulta.setInt(2, id_ct);
+            ResultSet resultado = consulta.executeQuery();
+            if (resultado.next()) {
+                passSave = resultado.getString("pass");
+            }
 
-            //Retrieving attributes later on 
-            String attribute = session.getAttribute("Connected").toString();
-
-            System.out.println("Connected : " + attribute);
-            //btnLogin.setText("Logout");
-            //txtUsername.setEnabled(false);
-            //txtPassword.setEnabled(false);
-            JOptionPane.showMessageDialog(rootPane,"Login Success!!!");
-        } else {
-            JOptionPane.showMessageDialog(rootPane,"Could not authenticate user");
-            //System.out.println("Could not authenticate user");
+            if (passwordService.passwordsMatch(pass, passSave)) {
+                cuentaActiva = true;
+                timerLogin.shutdown();
+                estaLogin = 0;
+                taparTodo();
+                jpSection.setVisible(true);
+                jpFondo.setVisible(true);
+                jpHuellas.setVisible(true);
+                huellas();
+                txtEmpleado.setText("");
+            } else {
+                JOptionPane.showOptionDialog(null, "Acceso denegado", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }//GEN-LAST:event_btnAccederActionPerformed
+
+    private void txtPassAdministradorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPassAdministradorKeyReleased
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == 10) {
+            btnAccederActionPerformed(null);
+        }
+    }//GEN-LAST:event_txtPassAdministradorKeyReleased
 
     private void eliminarHuella(String dedoCad) {
         try {
@@ -1664,6 +1479,7 @@ public class ChecadorI extends javax.swing.JApplet {
 
         dp = new DigitalPersona();
         dp.Iniciar();
+        //dp.stop();
         dp.start();
 
         empleados();
@@ -2428,7 +2244,7 @@ public class ChecadorI extends javax.swing.JApplet {
                 consulta.setString(1, cadAdmin);
                 ResultSet resultado = consulta.executeQuery();
                 int aux_id_empleado = 0;
-                if(resultado.next()){
+                if (resultado.next()) {
                     aux_id_empleado = resultado.getInt("idempleado");
                 }
                 consulta = cn.prepareStatement("SELECT * FROM huella WHERE idempleado = ?");
@@ -2455,32 +2271,6 @@ public class ChecadorI extends javax.swing.JApplet {
                     dp.clear();
                     JOptionPane.showOptionDialog(null, "Acceso denegado", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
                 }
-                
-                /*int aux_id_empleado = admins.get(cmbAdmin.getSelectedIndex()).getIdEmpleado();
-                consulta = cn.prepareStatement("SELECT * FROM huella WHERE idempleado = ?");
-                consulta.setInt(1, aux_id_empleado);
-                ResultSet resultado = consulta.executeQuery();
-                while (resultado.next()) {
-                    byte templateBuffer[] = resultado.getBytes("huella");
-                    if (dp.verificarHuella(templateBuffer)) {
-                        checar++;
-                        cuentaActiva = true;
-                        timerLogin.shutdown();
-                        //status = false;
-                        estaLogin = 0;
-                        taparTodo();
-                        jpSection.setVisible(true);
-                        jpFondo.setVisible(true);
-                        jpHuellas.setVisible(true);
-                        huellas();
-                        txtEmpleado.setText("");
-                    }
-                }
-                if (checar == 0 && activo) {
-                    dp.setActivo(false);
-                    dp.clear();
-                    JOptionPane.showOptionDialog(null, "Acceso denegado", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
-                }*/
 
             } catch (SQLException ex) {
                 Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
@@ -2731,7 +2521,6 @@ public class ChecadorI extends javax.swing.JApplet {
     private javax.swing.JButton btnCancelarGuardarHuella;
     private javax.swing.JButton btnEliminarHuellas;
     private javax.swing.JButton btnSeleccion;
-    private javax.swing.JComboBox<String> cmbAdmin;
     private javax.swing.JComboBox<String> cmbEmpleados;
     private org.jdesktop.swingx.JXPanel jpBienvenido;
     private org.jdesktop.swingx.JXPanel jpChecador;
@@ -2761,6 +2550,7 @@ public class ChecadorI extends javax.swing.JApplet {
     private org.jdesktop.swingx.JXLabel lbEmpleadosTotales;
     private org.jdesktop.swingx.JXLabel lbHora;
     private org.jdesktop.swingx.JXLabel lbMenu;
+    private org.jdesktop.swingx.JXLabel lbPass;
     private org.jdesktop.swingx.JXLabel lbRegresar;
     private org.jdesktop.swingx.JXLabel lbSelEmp;
     private org.jdesktop.swingx.JXLabel lbTipo;
