@@ -1,24 +1,22 @@
 package com.ieepo.checador;
 
-import static com.digitalpersona.onetouch.processing.DPFPTemplateStatus.TEMPLATE_STATUS_READY;
 import com.ieepo.checador.components.Imagen;
 import com.ieepo.checador.db.ConnectionBD;
 import com.ieepo.checador.model.Ct;
 import com.ieepo.checador.model.Empleado;
 import java.awt.*;
-import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
-import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shiro.authc.credential.DefaultPasswordService;
+import org.apache.shiro.crypto.hash.DefaultHashService;
+import org.apache.shiro.crypto.hash.Sha256Hash;
 
 
 /*
@@ -122,6 +120,14 @@ public class AdminToAdmin extends javax.swing.JApplet {
         txtCt = new javax.swing.JTextField();
         btnPonerAdmin = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
+        txtContra = new javax.swing.JPasswordField();
+        txtContraRepetir = new javax.swing.JPasswordField();
+        lbContra = new org.jdesktop.swingx.JXLabel();
+        lbContraseña = new org.jdesktop.swingx.JXLabel();
+        lbContraseniasIguales = new org.jdesktop.swingx.JXLabel();
+        lbUsuario = new org.jdesktop.swingx.JXLabel();
+        txtUsuarioAdmin = new javax.swing.JTextField();
+        lbUsuarioExiste = new org.jdesktop.swingx.JXLabel();
         jpLogin = new org.jdesktop.swingx.JXPanel();
         btnAcceder = new javax.swing.JButton();
         txtUsuario = new javax.swing.JTextField();
@@ -230,25 +236,53 @@ public class AdminToAdmin extends javax.swing.JApplet {
             }
         });
 
+        lbContra.setText("Contraseña:");
+
+        lbContraseña.setText("Repetir Contraseña:");
+
+        lbContraseniasIguales.setForeground(new java.awt.Color(255, 0, 0));
+        lbContraseniasIguales.setText("Las contraseñas no son iguales.");
+        lbContraseniasIguales.setVisible(false);
+
+        lbUsuario.setText("Usuario:");
+
+        txtUsuarioAdmin.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtUsuarioAdminKeyReleased(evt);
+            }
+        });
+
+        lbUsuarioExiste.setForeground(new java.awt.Color(255, 0, 0));
+        lbUsuarioExiste.setText("El usuario ya existe");
+        lbUsuarioExiste.setVisible(false);
+
         javax.swing.GroupLayout jpSectionLayout = new javax.swing.GroupLayout(jpSection);
         jpSection.setLayout(jpSectionLayout);
         jpSectionLayout.setHorizontalGroup(
             jpSectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpSectionLayout.createSequentialGroup()
-                .addGap(25, 25, 25)
+                .addGap(95, 95, 95)
                 .addGroup(jpSectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnPonerAdmin)
                     .addGroup(jpSectionLayout.createSequentialGroup()
                         .addGroup(jpSectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(lbEmpleados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lbCt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lbCt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbContra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbContraseña, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jpSectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lbContraseniasIguales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtEmpleado, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
                             .addComponent(txtCt, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
                             .addComponent(cmbCts, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cmbEmpleados, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(209, Short.MAX_VALUE))
+                            .addComponent(cmbEmpleados, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtContra)
+                            .addComponent(txtContraRepetir)
+                            .addComponent(txtUsuarioAdmin)
+                            .addComponent(lbUsuarioExiste, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(96, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpSectionLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnSalir)
@@ -265,15 +299,31 @@ public class AdminToAdmin extends javax.swing.JApplet {
                 .addGroup(jpSectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbCt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cmbCts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(48, 48, 48)
+                .addGap(21, 21, 21)
                 .addComponent(txtEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jpSectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lbEmpleados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cmbEmpleados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lbUsuarioExiste, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jpSectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtUsuarioAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(13, 13, 13)
+                .addComponent(lbContraseniasIguales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jpSectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtContra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbContra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jpSectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtContraRepetir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbContraseña, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnPonerAdmin)
-                .addGap(113, 113, 113))
+                .addGap(46, 46, 46))
         );
 
         jpLogin.setBackground(new java.awt.Color(255, 255, 255));
@@ -415,69 +465,54 @@ public class AdminToAdmin extends javax.swing.JApplet {
 
     private void btnPonerAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPonerAdminActionPerformed
         // TODO add your handling code here:
-        int id_empleado = empleados.get(cmbEmpleados.getSelectedIndex()).getIdEmpleado();
 
-        dp.clear();
+        String user = txtUsuarioAdmin.getText();
+        if (usuarioExiste(user)) {
+            lbUsuarioExiste.setVisible(true);
+            txtUsuarioAdmin.requestFocus();
+            return;
+        }
+        
+        String pass1 = String.copyValueOf(txtContra.getPassword());
+        String pass2 = String.copyValueOf(txtContraRepetir.getPassword());
+        lbContraseniasIguales.setVisible(false);
+        if (pass1.equals(pass2)) {
+            
+            Empleado e = empleados.get(cmbEmpleados.getSelectedIndex());
+            String nombre = e.toString();
+            int id_empleado = e.getIdEmpleado();
+            int id_ct = cts.get(cmbCts.getSelectedIndex()).getId_ct();
+            
+            DefaultHashService hashService = new DefaultHashService();
+            hashService.setHashIterations(500000);
+            hashService.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);
+            hashService.setGeneratePublicSalt(true);
 
-        Timer tiempo;
+            DefaultPasswordService passwordService = new DefaultPasswordService();
+            passwordService.setHashService(hashService);
 
-        tiempo = new Timer();
-        taskHuellas = new TimerTask() {
-            int contador = 1;
-
-            @Override
-            public void run() {
-                //contador++;
-                if (dp.Reclutador.getFeaturesNeeded() == 4 && contador == 1) {
-                    JOptionPane.showMessageDialog(null, "Ponga su dedo en el dispositivo", "", JOptionPane.INFORMATION_MESSAGE);
-                    contador++;
-                }
-                if (dp.Reclutador.getFeaturesNeeded() == 3 && contador == 2) {
-
-                    JOptionPane.showMessageDialog(null, "Una vez mas por favor!", "", JOptionPane.INFORMATION_MESSAGE);
-                    contador++;
-                }
-                if (dp.Reclutador.getFeaturesNeeded() == 2 && contador == 3) {
-                    JOptionPane.showMessageDialog(null, "Otra vez por favor", "", JOptionPane.INFORMATION_MESSAGE);
-                    contador++;
-                }
-                if (dp.Reclutador.getFeaturesNeeded() == 1 && contador == 4) {
-                    JOptionPane.showMessageDialog(null, "La ultima vez, ponga su dedo en el dispositivo!!", "", JOptionPane.INFORMATION_MESSAGE);
-                    contador++;
-                }
-                if (dp.Reclutador.getFeaturesNeeded() == 0 && contador == 5) {
-                    JOptionPane.showMessageDialog(null, "Listo huella guardada", "", JOptionPane.INFORMATION_MESSAGE);
-                    contador++;
-                }
-                if (dp.estadoHuellas() == TEMPLATE_STATUS_READY) {
-                    try {
-                        ByteArrayInputStream datosHuella = new ByteArrayInputStream(dp.getTemplate().serialize());
-                        Integer tamanioHuella = dp.getTemplate().serialize().length;
-
-                        ConnectionBD sql = new ConnectionBD();
-                        Connection cn = sql.conectar();
-                        PreparedStatement ps = cn.prepareStatement("INSERT INTO huella(idempleado, huella, dedomano) VALUES (?,?, ?)");
-                        ps.setInt(1, id_empleado); ///////////////////////////////////////////////////////////////////////// id_empleado
-                        ps.setBinaryStream(2, datosHuella, tamanioHuella);
-                        ps.setString(3, "2d");
-                        ps.executeUpdate();
-
-                        int id_ct = cts.get(cmbCts.getSelectedIndex()).getId_ct();
-
-                        ps = cn.prepareStatement("INSERT INTO admincts(idempleado, idct) VALUES (?,?)");
-                        ps.setInt(1, id_empleado);
-                        ps.setInt(2, id_ct);
-
-                        ps.executeUpdate();
-
-                        taskHuellas.cancel();
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
+            pass1 = passwordService.encryptPassword(pass1);
+            
+            ConnectionBD sql = new ConnectionBD();
+            Connection cn = sql.conectar();
+            try {
+                PreparedStatement ps = cn.prepareStatement("INSERT INTO sis_usuarios(usuario, nombre, pass, habilitado, idct, idempleado) VALUES (?,?,?,?,?,?)");
+                ps.setString(1, user);
+                ps.setString(2, nombre);
+                ps.setString(3, pass1);
+                ps.setInt(4, 1);
+                ps.setInt(5, id_ct);
+                ps.setInt(6, id_empleado);
+                ps.executeUpdate();
+            } catch (SQLException ex) {
+                Logger.getLogger(AdminToAdmin.class.getName()).log(Level.SEVERE, null, ex);
             }
-        };
-        tiempo.schedule(taskHuellas, 0, 1000);
+        } else {
+            lbContraseniasIguales.setVisible(true);
+            txtContra.setText("");
+            txtContraRepetir.setText("");
+            txtContra.requestFocus();
+        }
 
 
     }//GEN-LAST:event_btnPonerAdminActionPerformed
@@ -496,6 +531,12 @@ public class AdminToAdmin extends javax.swing.JApplet {
         txtUsuario.setText("");
         txtPass.setText("");
     }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void txtUsuarioAdminKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUsuarioAdminKeyReleased
+        // TODO add your handling code here:
+        System.out.println(evt.getKeyCode());
+        lbUsuarioExiste.setVisible(usuarioExiste(txtUsuarioAdmin.getText()));
+    }//GEN-LAST:event_txtUsuarioAdminKeyReleased
 
     private void cargarCts(String cadena) {
         ConnectionBD sql = new ConnectionBD();
@@ -588,11 +629,19 @@ public class AdminToAdmin extends javax.swing.JApplet {
             PreparedStatement consulta;
             consulta = cn.prepareStatement("SELECT * FROM sis_usuarios WHERE usuario in "
                     + "(SELECT usuario FROM sis_usuarios_roles WHERE rol = 'admin') "
-                    + "AND usuario = ?");
+                    + "AND usuario = BINARY ?");
             consulta.setString(1, usuario);
             ResultSet resultado = consulta.executeQuery();
             if (resultado.next()) {
-                if (DigestUtils.md5Hex(pass).equals(resultado.getString("pass"))) {
+                DefaultHashService hashService = new DefaultHashService();
+                hashService.setHashIterations(500000);
+                hashService.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);
+                hashService.setGeneratePublicSalt(true);
+
+                DefaultPasswordService passwordService = new DefaultPasswordService();
+                passwordService.setHashService(hashService);
+
+                if (passwordService.passwordsMatch(pass, resultado.getString("pass"))) {
                     jpLogin.setVisible(false);
                     jpSection.setVisible(true);
                     txtCt.setText("");
@@ -603,7 +652,6 @@ public class AdminToAdmin extends javax.swing.JApplet {
                     txtPass.setText("");
                     txtPass.requestFocus();
                 }
-                //System.out.println(resultado.getString("rol"));
             } else {
                 lbError.setText("Usuario no encontrado");
                 txtUsuario.setText("");
@@ -617,6 +665,24 @@ public class AdminToAdmin extends javax.swing.JApplet {
         }
 
     }
+    
+    private Boolean usuarioExiste(String cad){
+        ConnectionBD sql = new ConnectionBD();
+        Connection cn = sql.conectar();
+        try {
+            PreparedStatement consulta;
+            consulta = cn.prepareStatement("SELECT * FROM sis_usuarios WHERE usuario = BINARY ?");
+            consulta.setString(1, cad);
+            System.out.println("consulta = " + consulta);
+            ResultSet resultado = consulta.executeQuery();
+            return resultado.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            sql.desconectar();
+        }
+        return false;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAcceder;
@@ -628,6 +694,9 @@ public class AdminToAdmin extends javax.swing.JApplet {
     private org.jdesktop.swingx.JXPanel jpLogo;
     private org.jdesktop.swingx.JXPanel jpLogoPng;
     private org.jdesktop.swingx.JXPanel jpSection;
+    private org.jdesktop.swingx.JXLabel lbContra;
+    private org.jdesktop.swingx.JXLabel lbContraseniasIguales;
+    private org.jdesktop.swingx.JXLabel lbContraseña;
     private org.jdesktop.swingx.JXLabel lbCt;
     private org.jdesktop.swingx.JXLabel lbCt1;
     private org.jdesktop.swingx.JXLabel lbEmpleados;
@@ -635,9 +704,14 @@ public class AdminToAdmin extends javax.swing.JApplet {
     private org.jdesktop.swingx.JXLabel lbPass;
     private org.jdesktop.swingx.JXLabel lbTitulo;
     private org.jdesktop.swingx.JXLabel lbUser;
+    private org.jdesktop.swingx.JXLabel lbUsuario;
+    private org.jdesktop.swingx.JXLabel lbUsuarioExiste;
+    private javax.swing.JPasswordField txtContra;
+    private javax.swing.JPasswordField txtContraRepetir;
     private javax.swing.JTextField txtCt;
     private javax.swing.JTextField txtEmpleado;
     private javax.swing.JPasswordField txtPass;
     private javax.swing.JTextField txtUsuario;
+    private javax.swing.JTextField txtUsuarioAdmin;
     // End of variables declaration//GEN-END:variables
 }

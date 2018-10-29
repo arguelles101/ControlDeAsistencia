@@ -152,24 +152,32 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="95" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Component id="btnPonerAdmin" min="-2" max="-2" attributes="0"/>
-                      <Group type="102" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
                           <Group type="103" groupAlignment="1" attributes="0">
                               <Component id="lbEmpleados" min="-2" max="-2" attributes="0"/>
                               <Component id="lbCt" min="-2" max="-2" attributes="0"/>
+                              <Component id="lbContra" min="-2" max="-2" attributes="0"/>
+                              <Component id="lbContraseña" min="-2" max="-2" attributes="0"/>
+                              <Component id="lbUsuario" alignment="1" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="lbContraseniasIguales" min="-2" max="-2" attributes="0"/>
                               <Component id="txtEmpleado" alignment="0" pref="301" max="32767" attributes="0"/>
                               <Component id="txtCt" alignment="0" pref="301" max="32767" attributes="0"/>
                               <Component id="cmbCts" alignment="0" max="32767" attributes="0"/>
                               <Component id="cmbEmpleados" alignment="0" max="32767" attributes="0"/>
+                              <Component id="txtContra" alignment="0" max="32767" attributes="0"/>
+                              <Component id="txtContraRepetir" alignment="0" max="32767" attributes="0"/>
+                              <Component id="txtUsuarioAdmin" alignment="0" max="32767" attributes="0"/>
+                              <Component id="lbUsuarioExiste" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
-                  <EmptySpace pref="209" max="32767" attributes="0"/>
+                  <EmptySpace pref="96" max="32767" attributes="0"/>
               </Group>
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="32767" attributes="0"/>
@@ -190,16 +198,35 @@
                       <Component id="lbCt" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="cmbCts" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
                   <Component id="txtEmpleado" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="lbEmpleados" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="cmbEmpleados" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="60" max="32767" attributes="0"/>
+                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                  <Component id="lbUsuarioExiste" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="lbUsuario" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtUsuarioAdmin" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+                  <Component id="lbContraseniasIguales" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="txtContra" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="lbContra" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="txtContraRepetir" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="lbContraseña" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
                   <Component id="btnPonerAdmin" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="113" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -278,6 +305,52 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSalirActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JPasswordField" name="txtContra">
+        </Component>
+        <Component class="javax.swing.JPasswordField" name="txtContraRepetir">
+        </Component>
+        <Component class="org.jdesktop.swingx.JXLabel" name="lbContra">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Contrase&#xf1;a:"/>
+          </Properties>
+        </Component>
+        <Component class="org.jdesktop.swingx.JXLabel" name="lbContrase&#xf1;a">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Repetir Contrase&#xf1;a:"/>
+          </Properties>
+        </Component>
+        <Component class="org.jdesktop.swingx.JXLabel" name="lbContraseniasIguales">
+          <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="0" green="0" red="ff" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Las contrase&#xf1;as no son iguales."/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="lbContraseniasIguales.setVisible(false);"/>
+          </AuxValues>
+        </Component>
+        <Component class="org.jdesktop.swingx.JXLabel" name="lbUsuario">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Usuario:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="txtUsuarioAdmin">
+          <Events>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtUsuarioAdminKeyReleased"/>
+          </Events>
+        </Component>
+        <Component class="org.jdesktop.swingx.JXLabel" name="lbUsuarioExiste">
+          <Properties>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="0" green="0" red="ff" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="El usuario ya existe"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="lbUsuarioExiste.setVisible(false);"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>

@@ -132,6 +132,21 @@ public class ChecadorI extends javax.swing.JApplet {
                 sql = new ConnectionBD();
                 cn = sql.conectar();
 
+                DefaultHashService hashService = new DefaultHashService();
+                hashService.setHashIterations(500000);
+                hashService.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);
+                hashService.setGeneratePublicSalt(true);
+
+                DefaultPasswordService passwordService = new DefaultPasswordService();
+                passwordService.setHashService(hashService);
+
+                String cad = "abcdefghijklmnñopqrstuvwxyz";
+                String dac = passwordService.encryptPassword(cad);
+
+                System.out.println("cad = " + cad);
+                System.out.println("dac = " + dac);
+
+
                 /*if(true){
                     try {
                         preferences.clear();
@@ -771,6 +786,7 @@ public class ChecadorI extends javax.swing.JApplet {
         btnEliminarHuellas.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnEliminarHuellas.setBorderPainted(false);
         btnEliminarHuellas.setContentAreaFilled(false);
+        btnEliminarHuellas.setVisible(false);
         btnEliminarHuellas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEliminarHuellasActionPerformed(evt);
@@ -808,9 +824,9 @@ public class ChecadorI extends javax.swing.JApplet {
                     .addGroup(jpHuellasLayout.createSequentialGroup()
                         .addGap(24, 24, 24)
                         .addComponent(lbCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(84, 84, 84)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnEliminarHuellas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(167, 167, 167)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnCancelarGuardarHuella, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jpHuellasLayout.createSequentialGroup()
                         .addGap(60, 60, 60)
@@ -987,6 +1003,8 @@ public class ChecadorI extends javax.swing.JApplet {
         btn4i.setBackground(new Color(240, 240, 240));
         btn5i.setBackground(new Color(240, 240, 240));
 
+        btnEliminarHuellas.setVisible(false);
+
         int i = cmbEmpleados.getSelectedIndex();
         Empleado empleado = empleados.get(i);
         id_empleado = empleado.getIdEmpleado();
@@ -1030,6 +1048,9 @@ public class ChecadorI extends javax.swing.JApplet {
                     case "5i":
                         btn5i.setEnabled(false);
                         break;
+                }
+                if (!d.equals("")) {
+                    btnEliminarHuellas.setVisible(true);
                 }
             }
         } catch (SQLException ex) {
@@ -1293,6 +1314,9 @@ public class ChecadorI extends javax.swing.JApplet {
             btn5i.setEnabled(!btn5i.isEnabled());
             eliminarHuella = "";
             status = !status;
+            cmbEmpleados.setEnabled(!status);
+            txtEmpleado.setEnabled(!status);
+            btnEliminarHuellas.setVisible(!status);
             btnCancelarGuardarHuella.setVisible(false);
             return;
         }
@@ -1306,6 +1330,7 @@ public class ChecadorI extends javax.swing.JApplet {
         status = false;
         cmbEmpleados.setEnabled(!status);
         txtEmpleado.setEnabled(!status);
+        btnEliminarHuellas.setVisible(!status);
         taskHuellas.cancel();
     }//GEN-LAST:event_btnCancelarGuardarHuellaActionPerformed
 
@@ -1313,7 +1338,7 @@ public class ChecadorI extends javax.swing.JApplet {
 
         String username = txtAdmin.getText();
         String password = txtPassAdmin.getText();
-        
+
         DefaultHashService hashService = new DefaultHashService();
         hashService.setHashIterations(500000);
         hashService.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);
@@ -1334,12 +1359,15 @@ public class ChecadorI extends javax.swing.JApplet {
                 passSave = resultado.getString("pass");
                 id_ct_aux = resultado.getInt("idct");
             }
+            System.out.println("consulta = " + consulta);
+            System.out.println("id_ct_aux = " + id_ct_aux);
 
             if (passwordService.passwordsMatch(password, passSave)) {
                 Preferences preferences = Preferences.userNodeForPackage(ChecadorI.class);
 
                 preferences.putBoolean("id_ct", true);
                 preferences.putInt("id_ct", id_ct_aux);
+                id_ct = id_ct_aux;
                 taparTodo();
                 jpSection.setVisible(true);
                 jpChecador.setVisible(true);
@@ -1350,8 +1378,8 @@ public class ChecadorI extends javax.swing.JApplet {
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
- /**/
+
+        /**/
     }//GEN-LAST:event_btnSeleccionActionPerformed
 
     private void btnEliminarHuellasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarHuellasActionPerformed
@@ -1374,6 +1402,9 @@ public class ChecadorI extends javax.swing.JApplet {
         btn5i.setEnabled(!btn5i.isEnabled());
         eliminarHuella = "eliminarHuella";
         status = !status;
+        cmbEmpleados.setEnabled(!status);
+        txtEmpleado.setEnabled(!status);
+        btnEliminarHuellas.setVisible(!status);
         btnCancelarGuardarHuella.setVisible(true);
     }//GEN-LAST:event_btnEliminarHuellasActionPerformed
 
@@ -1400,6 +1431,15 @@ public class ChecadorI extends javax.swing.JApplet {
         DefaultPasswordService passwordService = new DefaultPasswordService();
         passwordService.setHashService(hashService);
 
+        if (user.length() == 0) {
+            txtAdministrador.requestFocus();
+            return;
+        }
+        if (pass.length() == 0) {
+            txtPassAdministrador.requestFocus();
+            return;
+        }
+
         try {
             String passSave = "";
 
@@ -1410,6 +1450,12 @@ public class ChecadorI extends javax.swing.JApplet {
             ResultSet resultado = consulta.executeQuery();
             if (resultado.next()) {
                 passSave = resultado.getString("pass");
+            } else {
+                JOptionPane.showOptionDialog(null, "Usuario no encontrado", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
+                txtAdministrador.setText("");
+                txtAdministrador.requestFocus();
+                txtPassAdministrador.setText("");
+                return;
             }
 
             if (passwordService.passwordsMatch(pass, passSave)) {
@@ -1424,6 +1470,8 @@ public class ChecadorI extends javax.swing.JApplet {
                 txtEmpleado.setText("");
             } else {
                 JOptionPane.showOptionDialog(null, "Acceso denegado", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
+                txtPassAdministrador.setText("");
+                txtPassAdministrador.requestFocus();
             }
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
@@ -2343,6 +2391,7 @@ public class ChecadorI extends javax.swing.JApplet {
         status = true;
         cmbEmpleados.setEnabled(!status);
         txtEmpleado.setEnabled(!status);
+        btnEliminarHuellas.setVisible(!status);
         btnCancelarGuardarHuella.setVisible(true);
     }
 
