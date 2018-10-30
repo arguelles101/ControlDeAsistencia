@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -140,13 +141,15 @@ public class ChecadorI extends javax.swing.JApplet {
                 DefaultPasswordService passwordService = new DefaultPasswordService();
                 passwordService.setHashService(hashService);
 
-                String cad = "abcdefghijklmnñopqrstuvwxyz";
+                String cad = "PLUIS";
                 String dac = passwordService.encryptPassword(cad);
 
                 System.out.println("cad = " + cad);
                 System.out.println("dac = " + dac);
 
-
+                if (main()) {
+                    //    return;
+                }
                 /*if(true){
                     try {
                         preferences.clear();
@@ -1318,6 +1321,7 @@ public class ChecadorI extends javax.swing.JApplet {
             txtEmpleado.setEnabled(!status);
             btnEliminarHuellas.setVisible(!status);
             btnCancelarGuardarHuella.setVisible(false);
+            cmbEmpleadosItemStateChanged(null);
             return;
         }
         JButton j = dedo;
@@ -1332,6 +1336,7 @@ public class ChecadorI extends javax.swing.JApplet {
         txtEmpleado.setEnabled(!status);
         btnEliminarHuellas.setVisible(!status);
         taskHuellas.cancel();
+        cmbEmpleadosItemStateChanged(null);
     }//GEN-LAST:event_btnCancelarGuardarHuellaActionPerformed
 
     private void btnSeleccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSeleccionActionPerformed
@@ -1495,9 +1500,8 @@ public class ChecadorI extends javax.swing.JApplet {
             consulta = cn.prepareStatement("DELETE FROM huella where idempleado = ? AND dedomano = ?");
             consulta.setInt(1, id_empleado);
             consulta.setString(2, dedoCad);
-            System.out.println("consulta = " + consulta);
-
             consulta.execute();
+            cmbEmpleadosItemStateChanged(null);
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -2121,6 +2125,7 @@ public class ChecadorI extends javax.swing.JApplet {
             consulta.setString(3, fecha);
             consulta.setTime(4, horaAux);
             consulta.setTime(5, horaAux);
+            System.out.println("consultaC = " + consulta);
             resultado = consulta.executeQuery();
             if (resultado.next()) {
                 int id_permiso;
@@ -2141,6 +2146,7 @@ public class ChecadorI extends javax.swing.JApplet {
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println("pC = " + p);
         if (p != null) {
             horaDBComparar = p.getHora_reinicio();
             datos[1] = PERMISO;
@@ -2288,7 +2294,7 @@ public class ChecadorI extends javax.swing.JApplet {
             try {
                 PreparedStatement consulta;
                 String cadAdmin = txtAdministrador.getText();
-                consulta = cn.prepareStatement("SELECT idempleado FROM sis_usuarios WHERE usuario = ?");
+                consulta = cn.prepareStatement("SELECT idempleado FROM sis_usuarios WHERE usuario = BINARY ?");
                 consulta.setString(1, cadAdmin);
                 ResultSet resultado = consulta.executeQuery();
                 int aux_id_empleado = 0;
@@ -2348,8 +2354,8 @@ public class ChecadorI extends javax.swing.JApplet {
     private void cargarEmpleados(String cadena) {
         try {
             PreparedStatement consulta;
-            consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idct = ? and (nombre LIKE ? or appaterno LIKE ? or apmaterno LIKE ?) ORDER BY nombre");
-            //consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idempleado in (SELECT idempleado FROM horarioempleado WHERE idct = ?) AND (nombre LIKE ? OR appaterno LIKE ? OR apmaterno LIKE ?) ORDER BY nombre");
+            //consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idct = ? and (nombre LIKE ? or appaterno LIKE ? or apmaterno LIKE ?) ORDER BY nombre");
+            consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idempleado in (SELECT idempleado FROM horarioempleado WHERE idct = ?) AND (nombre LIKE ? OR appaterno LIKE ? OR apmaterno LIKE ?) ORDER BY nombre");
             consulta.setInt(1, id_ct);
             consulta.setString(2, "%" + cadena + "%");
             consulta.setString(3, "%" + cadena + "%");
@@ -2453,6 +2459,7 @@ public class ChecadorI extends javax.swing.JApplet {
                         cmbEmpleados.setEnabled(!status);
                         txtEmpleado.setEnabled(!status);
                         taskHuellas.cancel();
+                        cmbEmpleadosItemStateChanged(null);
                     } catch (SQLException ex) {
                         Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -2465,6 +2472,8 @@ public class ChecadorI extends javax.swing.JApplet {
     private void cambiarPermisos(int id_em, Time horaAux) {
         Permiso p = null;
         try {
+            horaAux = new Time(horaAux.getHours(), horaAux.getMinutes() - minutos_retardo, horaAux.getSeconds());
+
             PreparedStatement consulta;
             ResultSet resultado;
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -2476,6 +2485,7 @@ public class ChecadorI extends javax.swing.JApplet {
             consulta.setString(3, fecha);
             consulta.setTime(4, horaAux);
             consulta.setTime(5, horaAux);
+            System.out.println("consulta = " + consulta);
             resultado = consulta.executeQuery();
             if (resultado.next()) {
                 int id_permiso;
@@ -2501,6 +2511,8 @@ public class ChecadorI extends javax.swing.JApplet {
                 tipo_permiso = resultado.getString("tipodpermiso");
                 p = new Permiso(id_permiso, id_incidencia, id_em, hora_inicio, hora_reinicio, fecha_inicio, fecha_reinicio, autorizo, numdoc, nota, tipo_permiso);
             }
+
+            System.out.println("p = " + p);
             if (p != null) {
                 date = p.getFecha_inicio();
                 Date date1 = p.getFecha_reinicio();
@@ -2552,6 +2564,95 @@ public class ChecadorI extends javax.swing.JApplet {
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private Boolean main() {
+        String cadena = "%josue velazquez sanchez%";
+        try {
+            PreparedStatement consulta;
+            //consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idct = ? and (nombre LIKE ? or appaterno LIKE ? or apmaterno LIKE ?) ORDER BY nombre");
+            consulta = cn.prepareStatement("SELECT * FROM empleados WHERE CONCAT_WS(' ', nombre, appaterno, apmaterno) LIKE ? ORDER BY nombre");
+            consulta.setString(1, cadena);
+            ResultSet resultado = consulta.executeQuery();
+            ArrayList<Empleado> empleadosVisitantes = new ArrayList<>();
+            while (resultado.next()) {
+                int idEmpleado;
+                String nombre;
+                String apPaterno;
+                String apMaterno;
+                String rfc;
+                int idct;
+
+                idEmpleado = resultado.getInt("idempleado");
+                nombre = resultado.getString("nombre").trim();
+                apPaterno = resultado.getString("apPaterno").trim();
+                apMaterno = resultado.getString("apMaterno").trim();
+                rfc = resultado.getString("rfc").trim();
+                idct = resultado.getInt("idct");
+
+                Empleado e = new Empleado(idEmpleado, nombre, apPaterno, apMaterno, rfc, idct);
+                empleadosVisitantes.add(e);
+            }
+            
+            empleadosVisitantes.forEach((empleadosVisitante) -> {
+                System.out.println(empleadosVisitante.toString());
+            });
+            int id_area = 0;
+            String motivo = "motivo";
+            Date date = new Date();
+            Timestamp timestamp = new Timestamp(date.getTime());
+            Empleado empleado = empleadosVisitantes.get(0);
+            consulta = cn.prepareStatement("INSERT INTO visitantes(idarea, idct, nombre, primerapellido, segundoapellido, empresa, motivo, fecha) VALUES (?,?,?,?,?,?,?,?)");
+            consulta.setInt(1, id_area);
+            consulta.setInt(2, id_ct);
+            consulta.setString(3, empleado.getNombre());
+            consulta.setString(4, empleado.getApPaterno());
+            consulta.setString(5, empleado.getApMaterno());
+            consulta.setInt(6, empleado.getIdCt());
+            consulta.setString(7, motivo);
+            consulta.setTimestamp(8, timestamp);
+            consulta.execute();
+            System.out.println("timestamp = " + timestamp);
+            System.out.println("consulta = " + consulta);
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        /*ArrayList<Integer> numeros;
+        numeros = new ArrayList<>();
+        int tam = 15;
+
+        for (int i = 0; i < tam; i++) {
+            numeros.add((int) (Math.random() * tam * tam) + 1);
+        }
+
+        numeros.forEach((numero) -> {
+            System.out.print(numero + " ");
+        });
+        System.out.println("");
+        System.out.println("");
+
+        
+        for (int j = 0; j < tam - 1; j++) {
+            for (int i = 0; i < tam -j - 1; i++) {
+                int aux = numeros.get(i);
+                if (numeros.get(i + 1) > aux) {
+                    numeros.add(i, numeros.get(i + 1));
+                    numeros.remove(i + 1);
+                    numeros.add(i + 1, aux);
+                    numeros.remove(i + 1 + 1);
+                }
+            }
+        }
+        
+        System.out.println("");
+        System.out.println("");
+        numeros.forEach((numero) -> {
+            System.out.print(numero + " ");
+        });
+        System.out.println("");*/
+        return true;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
