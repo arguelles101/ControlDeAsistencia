@@ -279,8 +279,12 @@ public class ChecadorI extends javax.swing.JApplet {
         txtSegundoApVisitante = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         txaMotivo = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnAceptarVisitante = new javax.swing.JButton();
+        btnCancelarVisitante = new javax.swing.JButton();
+        jXLabel2 = new org.jdesktop.swingx.JXLabel();
+        jXLabel3 = new org.jdesktop.swingx.JXLabel();
+        jXLabel4 = new org.jdesktop.swingx.JXLabel();
+        jXLabel5 = new org.jdesktop.swingx.JXLabel();
 
         Acceder.setText("Acceder");
         Acceder.addActionListener(new java.awt.event.ActionListener() {
@@ -1034,11 +1038,30 @@ public class ChecadorI extends javax.swing.JApplet {
 
         txaMotivo.setColumns(20);
         txaMotivo.setRows(5);
+        txaMotivo.setLineWrap(true);
         jScrollPane2.setViewportView(txaMotivo);
 
-        jButton1.setText("Aceptar");
+        btnAceptarVisitante.setText("Aceptar");
+        btnAceptarVisitante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAceptarVisitanteActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Cancelar");
+        btnCancelarVisitante.setText("Cancelar");
+        btnCancelarVisitante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarVisitanteActionPerformed(evt);
+            }
+        });
+
+        jXLabel2.setText("Nombre:");
+
+        jXLabel3.setText("Apellido paterno:");
+
+        jXLabel4.setText("Apellido materno:");
+
+        jXLabel5.setText("Motivo:");
 
         javax.swing.GroupLayout jpVisitantesFormularioLayout = new javax.swing.GroupLayout(jpVisitantesFormulario);
         jpVisitantesFormulario.setLayout(jpVisitantesFormularioLayout);
@@ -1046,15 +1069,19 @@ public class ChecadorI extends javax.swing.JApplet {
             jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addComponent(jXLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jXLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jXLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jXLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jXLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jXLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
-                    .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(txtSegundoApVisitante, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
-                        .addComponent(txtPrimerApVisitante)
-                        .addComponent(txtNombreVisitante, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtEmpleadoVisitante, javax.swing.GroupLayout.Alignment.LEADING)))
+                    .addComponent(txtSegundoApVisitante, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
+                    .addComponent(txtPrimerApVisitante, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtNombreVisitante)
+                    .addComponent(txtEmpleadoVisitante))
                 .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1062,8 +1089,8 @@ public class ChecadorI extends javax.swing.JApplet {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpVisitantesFormularioLayout.createSequentialGroup()
                         .addGap(194, 194, 194)
                         .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING))))
+                            .addComponent(btnAceptarVisitante, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnCancelarVisitante, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addGap(61, 61, 61))
         );
         jpVisitantesFormularioLayout.setVerticalGroup(
@@ -1075,19 +1102,27 @@ public class ChecadorI extends javax.swing.JApplet {
                     .addComponent(txtEmpleadoVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cmbEmpleadoVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(28, 28, 28)
-                .addComponent(txtNombreVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtNombreVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jXLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(txtPrimerApVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtPrimerApVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jXLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(txtSegundoApVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtSegundoApVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jXLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1)))
-                .addContainerGap(79, Short.MAX_VALUE))
+                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
+                            .addComponent(btnCancelarVisitante)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(btnAceptarVisitante)))
+                    .addComponent(jXLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jpVisitantesFondoLayout = new javax.swing.GroupLayout(jpVisitantesFondo);
@@ -1740,11 +1775,11 @@ public class ChecadorI extends javax.swing.JApplet {
         String cadena;
         cadena = txtEmpleadoVisitante.getText().trim();
         System.out.println("cadena.length() = " + cadena.length());
-        if(cadena.length() == 0 ){
+        if (cadena.length() == 0) {
             txtNombreVisitante.setEnabled(true);
             txtPrimerApVisitante.setEnabled(true);
             txtSegundoApVisitante.setEnabled(true);
-        }else{
+        } else {
             txtNombreVisitante.setEnabled(false);
             txtPrimerApVisitante.setEnabled(false);
             txtSegundoApVisitante.setEnabled(false);
@@ -1771,6 +1806,81 @@ public class ChecadorI extends javax.swing.JApplet {
         txtPrimerApVisitante.setText(v.getApPaterno());
         txtSegundoApVisitante.setText(v.getApMaterno());
     }//GEN-LAST:event_cmbEmpleadoVisitanteItemStateChanged
+
+    private void btnCancelarVisitanteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarVisitanteActionPerformed
+        // TODO add your handling code here:
+        taparTodo();
+        jpSection.setVisible(true);
+        jpVisitantes.setVisible(true);
+        jpVisitantesFondo.setVisible(true);
+        jpVisitantesTabla.setVisible(true);
+    }//GEN-LAST:event_btnCancelarVisitanteActionPerformed
+
+    private void btnAceptarVisitanteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarVisitanteActionPerformed
+        // TODO add your handling code here:
+
+        String nombre = txtNombreVisitante.getText();
+        String primer_apellido = txtPrimerApVisitante.getText();
+        String segundo_apellido = txtSegundoApVisitante.getText();
+        String motivo = txaMotivo.getText();
+        Date date = new Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
+        PreparedStatement consulta;
+        try {
+            if (txtEmpleadoVisitante.getText().length() > 0) {
+                Empleado empleado = empleadosVisitantes.get(cmbEmpleadoVisitante.getSelectedIndex());
+                Ct ct_aux = new Ct("", "");
+                consulta = cn.prepareStatement("SELECT * FROM cts WHERE idct = ?");
+                consulta.setInt(1, empleado.getIdCt());
+                ResultSet r = consulta.executeQuery();
+                if (r.next()) {
+                    int id_ct_aux;
+                    String clave;
+                    String domicilio;
+
+                    id_ct_aux = r.getInt("idct");
+                    clave = r.getString("clave");
+                    domicilio = r.getString("domicilio");
+
+                    ct_aux = new Ct(id_ct_aux, clave, domicilio);
+                }
+
+                consulta = cn.prepareStatement("INSERT INTO visitantes(idempresa, idct, nombre, primerapellido, segundoapellido, empresa, motivo, fecha) VALUES (?,?,?,?,?,?,?,?)");
+                consulta.setInt(1, ct_aux.getId_ct());
+                consulta.setInt(2, id_ct);
+                consulta.setString(3, empleado.getNombre());
+                consulta.setString(4, empleado.getApPaterno());
+                consulta.setString(5, empleado.getApMaterno());
+                consulta.setString(6, ct_aux.getDomicilio());
+                consulta.setString(7, motivo);
+                consulta.setTimestamp(8, timestamp);
+                consulta.execute();
+            }else{
+                nombre = nombre.toUpperCase();
+                primer_apellido = primer_apellido.toUpperCase();
+                segundo_apellido = segundo_apellido.toUpperCase();
+                
+                consulta = cn.prepareStatement("INSERT INTO visitantes(idct, nombre, primerapellido, segundoapellido, motivo, fecha) VALUES (?,?,?,?,?,?)");
+                consulta.setInt(1, id_ct);
+                consulta.setString(2, nombre);
+                consulta.setString(3, primer_apellido);
+                consulta.setString(4, segundo_apellido);
+                consulta.setString(5, motivo);
+                consulta.setTimestamp(6, timestamp);
+                consulta.execute();
+            }
+            taparTodo();
+            jpSection.setVisible(true);
+            jpVisitantes.setVisible(true);
+            jpVisitantesFondo.setVisible(true);
+            jpVisitantesTabla.setVisible(true);
+            cargarVisitantes();
+        } catch (SQLException ex) {
+            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
+    }//GEN-LAST:event_btnAceptarVisitanteActionPerformed
 
     private void eliminarHuella(String dedoCad) {
         try {
@@ -3003,7 +3113,6 @@ public class ChecadorI extends javax.swing.JApplet {
                 //ImageIcon icono = new ImageIcon("com/ieepo/checador/images/salir.png");
                 //btnM.setIcon(icono);
                 //btnM.setSize(50, 50);
-
                 btnM.setName(Integer.toString(visitante.getId_visita()));
                 btnM.setText("Salida");
                 btnM.setFont(new java.awt.Font("Arial", 3, 14));
@@ -3133,17 +3242,21 @@ public class ChecadorI extends javax.swing.JApplet {
     private javax.swing.JButton btn5d;
     private javax.swing.JButton btn5i;
     private javax.swing.JButton btnAcceder;
+    private javax.swing.JButton btnAceptarVisitante;
     private javax.swing.JButton btnAgregarVisitante;
     private javax.swing.JButton btnCancelarGuardarHuella;
+    private javax.swing.JButton btnCancelarVisitante;
     private javax.swing.JButton btnEliminarHuellas;
     private javax.swing.JButton btnSeleccion;
     private javax.swing.JComboBox<String> cmbEmpleadoVisitante;
     private javax.swing.JComboBox<String> cmbEmpleados;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private org.jdesktop.swingx.JXLabel jXLabel1;
+    private org.jdesktop.swingx.JXLabel jXLabel2;
+    private org.jdesktop.swingx.JXLabel jXLabel3;
+    private org.jdesktop.swingx.JXLabel jXLabel4;
+    private org.jdesktop.swingx.JXLabel jXLabel5;
     private org.jdesktop.swingx.JXPanel jpBienvenido;
     private org.jdesktop.swingx.JXPanel jpChecador;
     private org.jdesktop.swingx.JXPanel jpFondo;
