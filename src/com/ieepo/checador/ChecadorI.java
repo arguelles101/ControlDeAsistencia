@@ -2293,7 +2293,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                     id_incidencia = resultado.getInt(1);
                                 }
                                 if (datos[1] != null) {
-                                    cambiarPermisos(id_empleado, horaEComparar);
+                                    cambiarPermisosSalida(id_empleado, horaEComparar);
                                     int id_permiso = Integer.parseInt(datos[2]);
                                     ps = cn.prepareStatement("UPDATE permisos SET idincidencia = ? WHERE idpermiso = ?");
                                     ps.setInt(1, id_incidencia);
@@ -2324,7 +2324,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                     id_incidencia = resultado.getInt(1);
                                 }
                                 if (datos[1] != null) {
-                                    cambiarPermisos(id_empleado, horaEComparar);
+                                    cambiarPermisosEntrada(id_empleado, horaEComparar);
                                     int id_permiso = Integer.parseInt(datos[2]);
                                     ps = cn.prepareStatement("UPDATE permisos SET idincidencia = ? WHERE idpermiso = ?");
                                     ps.setInt(1, id_incidencia);
@@ -2378,7 +2378,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                         id_incidencia = resultado.getInt(1);
                                     }
                                     if (datos[1] != null) {
-                                        cambiarPermisos(id_empleado, horaEComparar);
+                                        cambiarPermisosEntrada(id_empleado, horaEComparar);
                                         int id_permiso = Integer.parseInt(datos[2]);
                                         ps = cn.prepareStatement("UPDATE permisos SET idincidencia = ? WHERE idpermiso = ?");
                                         ps.setInt(1, id_incidencia);
@@ -2410,7 +2410,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                         id_incidencia = resultado.getInt(1);
                                     }
                                     if (datos[1] != null) {
-                                        cambiarPermisos(id_empleado, horaEComparar);
+                                        cambiarPermisosSalida(id_empleado, horaEComparar);
                                         int id_permiso = Integer.parseInt(datos[2]);
                                         ps = cn.prepareStatement("UPDATE permisos SET idincidencia = ? WHERE idpermiso = ?");
                                         ps.setInt(1, id_incidencia);
@@ -2444,7 +2444,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                         id_incidencia = resultado.getInt(1);
                                     }
                                     if (datos[1] != null) {
-                                        cambiarPermisos(id_empleado, horaEComparar);
+                                        cambiarPermisosEntrada(id_empleado, horaEComparar);
                                         int id_permiso = Integer.parseInt(datos[2]);
                                         ps = cn.prepareStatement("UPDATE permisos SET idincidencia = ? WHERE idpermiso = ?");
                                         ps.setInt(1, id_incidencia);
@@ -2475,7 +2475,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                         id_incidencia = resultado.getInt(1);
                                     }
                                     if (datos[1] != null) {
-                                        cambiarPermisos(id_empleado, horaEComparar);
+                                        cambiarPermisosSalida(id_empleado, horaEComparar);
                                         int id_permiso = Integer.parseInt(datos[2]);
                                         ps = cn.prepareStatement("UPDATE permisos SET idincidencia = ? WHERE idpermiso = ?");
                                         ps.setInt(1, id_incidencia);
@@ -2865,7 +2865,7 @@ public class ChecadorI extends javax.swing.JApplet {
         tiempo.schedule(taskHuellas, 0, 1000);
     }
 
-    private void cambiarPermisos(int id_em, Time horaAux) {
+    private void cambiarPermisosEntrada(int id_em, Time horaAux) {
         Permiso p = null;
         try {
             horaAux = new Time(horaAux.getHours(), horaAux.getMinutes() - minutos_retardo, horaAux.getSeconds());
@@ -2937,6 +2937,78 @@ public class ChecadorI extends javax.swing.JApplet {
         }
     }
 
+    private void cambiarPermisosSalida(int id_em, Time horaAux) {
+        Permiso p = null;
+        try {
+            horaAux = new Time(horaAux.getHours(), horaAux.getMinutes() + minutos_retardo, horaAux.getSeconds());
+
+            PreparedStatement consulta;
+            ResultSet resultado;
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+            String fecha = dateFormat.format(date);
+            consulta = cn.prepareStatement("SELECT * FROM permisos WHERE idempleado = ? and fechainicio <= ? and fechareinicio >= ? and horainicio <= ? and horareinicio >= ? and idincidencia IS NULL");
+            consulta.setInt(1, id_em);
+            consulta.setString(2, fecha);
+            consulta.setString(3, fecha);
+            consulta.setTime(4, horaAux);
+            consulta.setTime(5, horaAux);
+            System.out.println("consulta = " + consulta);
+            resultado = consulta.executeQuery();
+            if (resultado.next()) {
+                int id_permiso;
+                int id_incidencia;
+                Time hora_inicio;
+                Time hora_reinicio;
+                Date fecha_inicio;
+                Date fecha_reinicio;
+                String autorizo;
+                String numdoc;
+                String nota;
+                String tipo_permiso;
+
+                id_permiso = resultado.getInt("idpermiso");
+                id_incidencia = resultado.getInt("idincidencia");
+                hora_inicio = resultado.getTime("horainicio");
+                hora_reinicio = resultado.getTime("horareinicio");
+                fecha_inicio = resultado.getDate("fechainicio");
+                fecha_reinicio = resultado.getDate("fechareinicio");
+                autorizo = resultado.getString("autorizo");
+                numdoc = resultado.getString("numdoc");
+                nota = resultado.getString("nota");
+                tipo_permiso = resultado.getString("tipodpermiso");
+                p = new Permiso(id_permiso, id_incidencia, id_em, hora_inicio, hora_reinicio, fecha_inicio, fecha_reinicio, autorizo, numdoc, nota, tipo_permiso);
+            }
+
+            System.out.println("p = " + p);
+            if (p != null) {
+                date = p.getFecha_inicio();
+                Date date1 = p.getFecha_reinicio();
+                String date1i = date1.toString();
+                Date aux = date;
+                fecha = dateFormat.format(aux);
+
+                while (!fecha.equals(date1i)) {
+                    aux = new Date(aux.getYear(), aux.getMonth(), aux.getDate() + 1);
+                    fecha = dateFormat.format(aux);
+                    PreparedStatement ps = cn.prepareStatement("INSERT INTO permisos(idempleado, horainicio, horareinicio, fechainicio, fechareinicio, autorizo, numdoc, nota, tipodpermiso) VALUES (?,?,?,?,?,?,?,?,?)");
+                    ps.setInt(1, id_em);
+                    ps.setTime(2, p.getHora_inicio());
+                    ps.setTime(3, p.getHora_reinicio());
+                    ps.setString(4, fecha);
+                    ps.setString(5, fecha);
+                    ps.setString(6, p.getAutorizo());
+                    ps.setString(7, p.getNumdoc());
+                    ps.setString(8, p.getNota());
+                    ps.setString(9, p.getTipo_permiso());
+                    ps.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     private void cargarCts(String cadena) {
         cts = new ArrayList<>();
         try {
