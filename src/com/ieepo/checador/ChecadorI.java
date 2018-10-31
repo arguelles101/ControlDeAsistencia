@@ -13,9 +13,13 @@ import com.ieepo.checador.model.Empleado;
 import com.ieepo.checador.model.Horario;
 import com.ieepo.checador.model.HorarioEmpleado;
 import com.ieepo.checador.model.Permiso;
+import com.ieepo.checador.model.Visitante;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
@@ -40,8 +44,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.crypto.hash.DefaultHashService;
 import org.apache.shiro.crypto.hash.Sha256Hash;
@@ -96,6 +105,8 @@ public class ChecadorI extends javax.swing.JApplet {
     ConnectionBD sql;
     Connection cn;
 
+    ArrayList<Empleado> empleadosVisitantes;
+
     /**
      * Initializes the applet Checador
      */
@@ -147,9 +158,9 @@ public class ChecadorI extends javax.swing.JApplet {
                 System.out.println("cad = " + cad);
                 System.out.println("dac = " + dac);
 
-                if (main()) {
-                    //    return;
-                }
+                //if (main()) {
+                //    return;
+                //}
                 /*if(true){
                     try {
                         preferences.clear();
@@ -197,6 +208,8 @@ public class ChecadorI extends javax.swing.JApplet {
 
         pmMenu = new javax.swing.JPopupMenu();
         Acceder = new javax.swing.JMenuItem();
+        Visitantes = new javax.swing.JMenuItem();
+        rectanglePainter1 = new org.jdesktop.swingx.painter.RectanglePainter();
         jpLogo = new org.jdesktop.swingx.JXPanel();
         jpLogoPng = new org.jdesktop.swingx.JXPanel();
         lbTitulo = new org.jdesktop.swingx.JXLabel();
@@ -250,6 +263,24 @@ public class ChecadorI extends javax.swing.JApplet {
         btnSeleccion = new javax.swing.JButton();
         txtAdmin = new javax.swing.JTextField();
         txtPassAdmin = new javax.swing.JPasswordField();
+        jpVisitantes = new org.jdesktop.swingx.JXPanel();
+        lbRegresarVisitantes = new org.jdesktop.swingx.JXLabel();
+        jpVisitantesFondo = new org.jdesktop.swingx.JXPanel();
+        jpVisitantesTabla = new org.jdesktop.swingx.JXPanel();
+        btnAgregarVisitante = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblVisitantes = new org.jdesktop.swingx.JXTable();
+        jpVisitantesFormulario = new org.jdesktop.swingx.JXPanel();
+        jXLabel1 = new org.jdesktop.swingx.JXLabel();
+        txtEmpleadoVisitante = new javax.swing.JTextField();
+        cmbEmpleadoVisitante = new javax.swing.JComboBox<>();
+        txtNombreVisitante = new javax.swing.JTextField();
+        txtPrimerApVisitante = new javax.swing.JTextField();
+        txtSegundoApVisitante = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txaMotivo = new javax.swing.JTextArea();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         Acceder.setText("Acceder");
         Acceder.addActionListener(new java.awt.event.ActionListener() {
@@ -258,6 +289,14 @@ public class ChecadorI extends javax.swing.JApplet {
             }
         });
         pmMenu.add(Acceder);
+
+        Visitantes.setText("Visitantes");
+        Visitantes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                VisitantesActionPerformed(evt);
+            }
+        });
+        pmMenu.add(Visitantes);
 
         setPreferredSize(new java.awt.Dimension(600, 500));
 
@@ -462,7 +501,7 @@ public class ChecadorI extends javax.swing.JApplet {
                 .addGroup(jpChecadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jpBienvenido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lbMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addComponent(lbHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(116, 116, 116)
                 .addComponent(lbDiaMes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -563,7 +602,7 @@ public class ChecadorI extends javax.swing.JApplet {
                     .addComponent(txtPassAdministrador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(57, 57, 57)
                 .addComponent(btnAcceder)
-                .addContainerGap(128, Short.MAX_VALUE))
+                .addContainerGap(122, Short.MAX_VALUE))
         );
 
         jpHuellas.setBackground(new java.awt.Color(255, 255, 255));
@@ -895,11 +934,196 @@ public class ChecadorI extends javax.swing.JApplet {
         jpFondoLayout.setVerticalGroup(
             jpFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpFondoLayout.createSequentialGroup()
-                .addComponent(jpLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 406, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jpLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(jpHuellas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(jpSeleccionarCts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jpVisitantes.setBackground(new java.awt.Color(255, 255, 255));
+        jpVisitantes.setPreferredSize(new java.awt.Dimension(600, 400));
+
+        lbRegresarVisitantes.setForeground(new java.awt.Color(51, 153, 255));
+        lbRegresarVisitantes.setText("Regresar");
+        lbRegresarVisitantes.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        lbRegresarVisitantes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbRegresarVisitantesMouseClicked(evt);
+            }
+        });
+
+        jpVisitantesFondo.setPreferredSize(new java.awt.Dimension(600, 330));
+
+        jpVisitantesTabla.setBackground(new java.awt.Color(255, 255, 255));
+        jpVisitantesTabla.setPreferredSize(new java.awt.Dimension(600, 330));
+
+        btnAgregarVisitante.setText("Agregar visitante");
+        btnAgregarVisitante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarVisitanteActionPerformed(evt);
+            }
+        });
+
+        tblVisitantes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "id", "Nombre", "Motivo", "Entrada", "Salida"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true, true, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tblVisitantes);
+        if (tblVisitantes.getColumnModel().getColumnCount() > 0) {
+            tblVisitantes.getColumnModel().getColumn(0).setMinWidth(0);
+            tblVisitantes.getColumnModel().getColumn(0).setPreferredWidth(5);
+            tblVisitantes.getColumnModel().getColumn(0).setMaxWidth(10);
+        }
+
+        javax.swing.GroupLayout jpVisitantesTablaLayout = new javax.swing.GroupLayout(jpVisitantesTabla);
+        jpVisitantesTabla.setLayout(jpVisitantesTablaLayout);
+        jpVisitantesTablaLayout.setHorizontalGroup(
+            jpVisitantesTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpVisitantesTablaLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jpVisitantesTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpVisitantesTablaLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnAgregarVisitante))
+                    .addComponent(jScrollPane1))
+                .addContainerGap())
+        );
+        jpVisitantesTablaLayout.setVerticalGroup(
+            jpVisitantesTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpVisitantesTablaLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnAgregarVisitante)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(27, Short.MAX_VALUE))
+        );
+
+        jpVisitantesFormulario.setBackground(new java.awt.Color(255, 255, 255));
+        jpVisitantesFormulario.setPreferredSize(new java.awt.Dimension(600, 330));
+
+        jXLabel1.setText("Empleado:");
+
+        txtEmpleadoVisitante.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtEmpleadoVisitanteKeyReleased(evt);
+            }
+        });
+
+        cmbEmpleadoVisitante.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbEmpleadoVisitanteItemStateChanged(evt);
+            }
+        });
+
+        txaMotivo.setColumns(20);
+        txaMotivo.setRows(5);
+        jScrollPane2.setViewportView(txaMotivo);
+
+        jButton1.setText("Aceptar");
+
+        jButton2.setText("Cancelar");
+
+        javax.swing.GroupLayout jpVisitantesFormularioLayout = new javax.swing.GroupLayout(jpVisitantesFormulario);
+        jpVisitantesFormulario.setLayout(jpVisitantesFormularioLayout);
+        jpVisitantesFormularioLayout.setHorizontalGroup(
+            jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jXLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
+                    .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(txtSegundoApVisitante, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
+                        .addComponent(txtPrimerApVisitante)
+                        .addComponent(txtNombreVisitante, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(txtEmpleadoVisitante, javax.swing.GroupLayout.Alignment.LEADING)))
+                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbEmpleadoVisitante, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpVisitantesFormularioLayout.createSequentialGroup()
+                        .addGap(194, 194, 194)
+                        .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING))))
+                .addGap(61, 61, 61))
+        );
+        jpVisitantesFormularioLayout.setVerticalGroup(
+            jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
+                .addGap(32, 32, 32)
+                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jXLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtEmpleadoVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbEmpleadoVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28)
+                .addComponent(txtNombreVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(txtPrimerApVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(txtSegundoApVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton1)))
+                .addContainerGap(79, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jpVisitantesFondoLayout = new javax.swing.GroupLayout(jpVisitantesFondo);
+        jpVisitantesFondo.setLayout(jpVisitantesFondoLayout);
+        jpVisitantesFondoLayout.setHorizontalGroup(
+            jpVisitantesFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpVisitantesFondoLayout.createSequentialGroup()
+                .addComponent(jpVisitantesFormulario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jpVisitantesTabla, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jpVisitantesFondoLayout.setVerticalGroup(
+            jpVisitantesFondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpVisitantesFondoLayout.createSequentialGroup()
+                .addComponent(jpVisitantesTabla, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jpVisitantesFormulario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        javax.swing.GroupLayout jpVisitantesLayout = new javax.swing.GroupLayout(jpVisitantes);
+        jpVisitantes.setLayout(jpVisitantesLayout);
+        jpVisitantesLayout.setHorizontalGroup(
+            jpVisitantesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpVisitantesLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lbRegresarVisitantes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30))
+            .addComponent(jpVisitantesFondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        jpVisitantesLayout.setVerticalGroup(
+            jpVisitantesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpVisitantesLayout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addComponent(lbRegresarVisitantes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jpVisitantesFondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -910,15 +1134,19 @@ public class ChecadorI extends javax.swing.JApplet {
             .addGroup(jpSectionLayout.createSequentialGroup()
                 .addGroup(jpSectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jpChecador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jpFondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jpFondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jpVisitantes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jpSectionLayout.setVerticalGroup(
             jpSectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpSectionLayout.createSequentialGroup()
-                .addComponent(jpChecador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jpFondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jpChecador, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jpFondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jpVisitantes, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1489,6 +1717,60 @@ public class ChecadorI extends javax.swing.JApplet {
             btnAccederActionPerformed(null);
         }
     }//GEN-LAST:event_txtPassAdministradorKeyReleased
+
+    private void VisitantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VisitantesActionPerformed
+        // TODO add your handling code here:
+        taparTodo();
+        jpSection.setVisible(true);
+        jpVisitantes.setVisible(true);
+        jpVisitantesFondo.setVisible(true);
+        jpVisitantesTabla.setVisible(true);
+        cargarVisitantes();
+    }//GEN-LAST:event_VisitantesActionPerformed
+
+    private void lbRegresarVisitantesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbRegresarVisitantesMouseClicked
+        // TODO add your handling code here:
+        taparTodo();
+        jpSection.setVisible(true);
+        jpChecador.setVisible(true);
+    }//GEN-LAST:event_lbRegresarVisitantesMouseClicked
+
+    private void txtEmpleadoVisitanteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtEmpleadoVisitanteKeyReleased
+        // TODO add your handling code here:
+        String cadena;
+        cadena = txtEmpleadoVisitante.getText().trim();
+        System.out.println("cadena.length() = " + cadena.length());
+        if(cadena.length() == 0 ){
+            txtNombreVisitante.setEnabled(true);
+            txtPrimerApVisitante.setEnabled(true);
+            txtSegundoApVisitante.setEnabled(true);
+        }else{
+            txtNombreVisitante.setEnabled(false);
+            txtPrimerApVisitante.setEnabled(false);
+            txtSegundoApVisitante.setEnabled(false);
+        }
+        cargarEmpleadosVisitantes(cadena);
+    }//GEN-LAST:event_txtEmpleadoVisitanteKeyReleased
+
+    private void btnAgregarVisitanteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarVisitanteActionPerformed
+        // TODO add your handling code here:
+        taparTodo();
+        jpSection.setVisible(true);
+        jpVisitantes.setVisible(true);
+        jpVisitantesFondo.setVisible(true);
+        jpVisitantesFormulario.setVisible(true);
+    }//GEN-LAST:event_btnAgregarVisitanteActionPerformed
+
+    private void cmbEmpleadoVisitanteItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbEmpleadoVisitanteItemStateChanged
+        // TODO add your handling code here:
+        if (cmbEmpleadoVisitante.getSelectedIndex() == -1) {
+            return;
+        }
+        Empleado v = empleadosVisitantes.get(cmbEmpleadoVisitante.getSelectedIndex());
+        txtNombreVisitante.setText(v.getNombre());
+        txtPrimerApVisitante.setText(v.getApPaterno());
+        txtSegundoApVisitante.setText(v.getApMaterno());
+    }//GEN-LAST:event_cmbEmpleadoVisitanteItemStateChanged
 
     private void eliminarHuella(String dedoCad) {
         try {
@@ -2339,6 +2621,10 @@ public class ChecadorI extends javax.swing.JApplet {
         jpSection.setVisible(false);
         jpHuellas.setVisible(false);
         jpLogin.setVisible(false);
+        jpVisitantes.setVisible(false);
+        jpVisitantesFondo.setVisible(false);
+        jpVisitantesTabla.setVisible(false);
+        jpVisitantesFormulario.setVisible(false);
     }
 
     private void huellas() {
@@ -2593,7 +2879,7 @@ public class ChecadorI extends javax.swing.JApplet {
                 Empleado e = new Empleado(idEmpleado, nombre, apPaterno, apMaterno, rfc, idct);
                 empleadosVisitantes.add(e);
             }
-            
+
             empleadosVisitantes.forEach((empleadosVisitante) -> {
                 System.out.println(empleadosVisitante.toString());
             });
@@ -2614,7 +2900,7 @@ public class ChecadorI extends javax.swing.JApplet {
             consulta.execute();
             System.out.println("timestamp = " + timestamp);
             System.out.println("consulta = " + consulta);
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -2655,8 +2941,187 @@ public class ChecadorI extends javax.swing.JApplet {
         return true;
     }
 
+    private void cargarVisitantes() {
+        try {
+            PreparedStatement consulta;
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+            String fecha = dateFormat.format(date);
+
+            consulta = cn.prepareStatement("SELECT * FROM visitantes WHERE fecha LIKE ? AND horadsalida IS NULL AND idct = ?");
+            consulta.setString(1, fecha + "%");
+            consulta.setInt(2, id_ct);
+            ResultSet resultado = consulta.executeQuery();
+
+            ArrayList<Visitante> visitantes = new ArrayList<>();
+            while (resultado.next()) {
+                int id_visita;
+                int id_empresa;
+                int id_area;
+                String nombre;
+                String primer_apellido;
+                String segundo_apellido;
+                String empresa;
+                String motivo;
+                Time hora_salida;
+
+                id_visita = resultado.getInt("idvisita");
+                id_empresa = resultado.getInt("idempresa");
+                id_area = resultado.getInt("idarea");
+                nombre = resultado.getString("nombre");
+                primer_apellido = resultado.getString("primerapellido");
+                segundo_apellido = resultado.getString("segundoapellido");
+                empresa = resultado.getString("empresa");
+                motivo = resultado.getString("motivo");
+                fecha = resultado.getString("fecha");
+                hora_salida = resultado.getTime("horadsalida");
+
+                Visitante v = new Visitante(id_visita, id_empresa, id_area, id_ct, nombre, primer_apellido, segundo_apellido, empresa, motivo, fecha, hora_salida);
+                visitantes.add(v);
+            }
+
+            String[] columnas = new String[]{
+                "*",
+                "Nombre",
+                "Motivo",
+                "Entrada",
+                ""
+            };
+            final Class[] tiposColumnas = new Class[]{
+                java.lang.Integer.class,
+                java.lang.String.class,
+                java.lang.String.class,
+                java.lang.String.class,
+                JButton.class
+            };
+            Object[][] filas = new Object[visitantes.size()][5];
+
+            for (int i = 0; i < visitantes.size(); i++) {
+                Visitante visitante = visitantes.get(i);
+                JButton btnM = new JButton();
+
+                //ImageIcon icono = new ImageIcon("com/ieepo/checador/images/salir.png");
+                //btnM.setIcon(icono);
+                //btnM.setSize(50, 50);
+
+                btnM.setName(Integer.toString(visitante.getId_visita()));
+                btnM.setText("Salida");
+                btnM.setFont(new java.awt.Font("Arial", 3, 14));
+                btnM.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+                btnM.setBorderPainted(false);
+                btnM.setContentAreaFilled(false);
+
+                filas[i][0] = visitante.getId_visita();
+                filas[i][1] = visitante.toString();
+                filas[i][2] = visitante.getMotivo();
+                filas[i][3] = visitante.getFecha().substring(10, 19);
+                filas[i][4] = btnM;
+            }
+
+            tblVisitantes.setModel(new javax.swing.table.DefaultTableModel(
+                    filas,
+                    columnas) {
+                Class[] tipos = tiposColumnas;
+
+                @Override
+                public Class getColumnClass(int columnIndex) {
+                    // Este método es invocado por el CellRenderer para saber que dibujar en la celda,
+                    // observen que estamos retornando la clase que definimos de antemano.
+                    return tipos[columnIndex];
+                }
+
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    // Sobrescribimos este método para evitar que la columna que contiene los botones sea editada.
+                    return !(this.getColumnClass(column).equals(JButton.class));
+                }
+            });
+
+            tblVisitantes.setDefaultRenderer(JButton.class, (JTable jtable, Object objeto, boolean estaSeleccionado, boolean tieneElFoco, int fila, int columna) -> {
+                return (Component) objeto /**
+                         * Observen que todo lo que hacemos en éste método es
+                         * retornar el objeto que se va a dibujar en la celda.
+                         * Esto significa que se dibujará en la celda el objeto
+                         * que devuelva el TableModel. También significa que
+                         * este renderer nos permitiría dibujar cualquier objeto
+                         * gráfico en la grilla, pues retorna el objeto tal y
+                         * como lo recibe.
+                         */
+                        ;
+            });
+
+            tblVisitantes.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int fila = tblVisitantes.rowAtPoint(e.getPoint());
+                    int columna = tblVisitantes.columnAtPoint(e.getPoint());
+                    if (tblVisitantes.getModel().getColumnClass(columna).equals(JButton.class)) {
+                        if (fila == -1) {
+                            return;
+                        }
+                        JButton a = (JButton) tblVisitantes.getModel().getValueAt(fila, columna);
+                        Time tiempo = new Time(new Date().getTime());
+                        int id_visita = Integer.parseInt(a.getName());
+
+                        try {
+                            PreparedStatement ps;
+
+                            ps = cn.prepareStatement("UPDATE visitantes SET horadsalida = ? WHERE idvisita = ?");
+                            ps.setTime(1, tiempo);
+                            ps.setInt(2, id_visita);
+                            ps.executeUpdate();
+                            cargarVisitantes();
+                        } catch (SQLException ex) {
+                            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                    }
+                }
+            });
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void cargarEmpleadosVisitantes(String cadena) {
+        try {
+            PreparedStatement consulta;
+            consulta = cn.prepareStatement("SELECT * FROM empleados WHERE CONCAT_WS(' ', nombre, appaterno, apmaterno) LIKE ? ORDER BY nombre");
+            consulta.setString(1, "%" + cadena + "%");
+            ResultSet resultado = consulta.executeQuery();
+            empleadosVisitantes = new ArrayList<>();
+            while (resultado.next()) {
+                int idEmpleado;
+                String nombre;
+                String apPaterno;
+                String apMaterno;
+                String rfc;
+                int id_ct_aux;
+
+                idEmpleado = resultado.getInt("idempleado");
+                nombre = resultado.getString("nombre").trim();
+                apPaterno = resultado.getString("apPaterno").trim();
+                apMaterno = resultado.getString("apMaterno").trim();
+                rfc = resultado.getString("rfc").trim();
+                id_ct_aux = resultado.getInt("idct");
+
+                Empleado e = new Empleado(idEmpleado, nombre, apPaterno, apMaterno, rfc, id_ct_aux);
+                empleadosVisitantes.add(e);
+            }
+            cmbEmpleadoVisitante.removeAllItems();
+            empleadosVisitantes.forEach((empleadosVisitante) -> {
+                cmbEmpleadoVisitante.addItem(empleadosVisitante.toString());
+            });
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem Acceder;
+    private javax.swing.JMenuItem Visitantes;
     private javax.swing.JButton btn1d;
     private javax.swing.JButton btn1i;
     private javax.swing.JButton btn2d;
@@ -2668,10 +3133,17 @@ public class ChecadorI extends javax.swing.JApplet {
     private javax.swing.JButton btn5d;
     private javax.swing.JButton btn5i;
     private javax.swing.JButton btnAcceder;
+    private javax.swing.JButton btnAgregarVisitante;
     private javax.swing.JButton btnCancelarGuardarHuella;
     private javax.swing.JButton btnEliminarHuellas;
     private javax.swing.JButton btnSeleccion;
+    private javax.swing.JComboBox<String> cmbEmpleadoVisitante;
     private javax.swing.JComboBox<String> cmbEmpleados;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private org.jdesktop.swingx.JXLabel jXLabel1;
     private org.jdesktop.swingx.JXPanel jpBienvenido;
     private org.jdesktop.swingx.JXPanel jpChecador;
     private org.jdesktop.swingx.JXPanel jpFondo;
@@ -2682,6 +3154,10 @@ public class ChecadorI extends javax.swing.JApplet {
     private org.jdesktop.swingx.JXPanel jpLogoPng;
     private org.jdesktop.swingx.JXPanel jpSection;
     private org.jdesktop.swingx.JXPanel jpSeleccionarCts;
+    private org.jdesktop.swingx.JXPanel jpVisitantes;
+    private org.jdesktop.swingx.JXPanel jpVisitantesFondo;
+    private org.jdesktop.swingx.JXPanel jpVisitantesFormulario;
+    private org.jdesktop.swingx.JXPanel jpVisitantesTabla;
     private org.jdesktop.swingx.JXLabel lbAdmin;
     private org.jdesktop.swingx.JXLabel lbBienvenido;
     private org.jdesktop.swingx.JXLabel lbCerrarSesion;
@@ -2702,15 +3178,23 @@ public class ChecadorI extends javax.swing.JApplet {
     private org.jdesktop.swingx.JXLabel lbMenu;
     private org.jdesktop.swingx.JXLabel lbPass;
     private org.jdesktop.swingx.JXLabel lbRegresar;
+    private org.jdesktop.swingx.JXLabel lbRegresarVisitantes;
     private org.jdesktop.swingx.JXLabel lbSelEmp;
     private org.jdesktop.swingx.JXLabel lbTipo;
     private org.jdesktop.swingx.JXLabel lbTitulo;
     private javax.swing.JPopupMenu pmMenu;
+    private org.jdesktop.swingx.painter.RectanglePainter rectanglePainter1;
+    private org.jdesktop.swingx.JXTable tblVisitantes;
+    private javax.swing.JTextArea txaMotivo;
     private javax.swing.JTextField txtAdmin;
     private javax.swing.JTextField txtAdministrador;
     private javax.swing.JTextField txtEmpleado;
+    private javax.swing.JTextField txtEmpleadoVisitante;
+    private javax.swing.JTextField txtNombreVisitante;
     private javax.swing.JPasswordField txtPassAdmin;
     private javax.swing.JPasswordField txtPassAdministrador;
+    private javax.swing.JTextField txtPrimerApVisitante;
+    private javax.swing.JTextField txtSegundoApVisitante;
     // End of variables declaration//GEN-END:variables
 
 }
