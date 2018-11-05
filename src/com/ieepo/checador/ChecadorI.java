@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -3195,11 +3196,11 @@ public class ChecadorI extends javax.swing.JApplet {
                 Visitante visitante = visitantes.get(i);
                 JButton btnM = new JButton();
 
-                // ImageIcon icono = new ImageIcon("com/ieepo/checador/images/salir.png");
-                //btnM.setIcon(icono);
+                 ImageIcon icono = new ImageIcon("com/ieepo/checador/images/logo.png");
+                btnM.setIcon(icono);
                 btnM.setSize(50, 50);
                 btnM.setName(Integer.toString(visitante.getId_visita()));
-                btnM.setText("Salida");
+                //btnM.setText("Salida");
                 btnM.setFont(new java.awt.Font("Arial", 3, 14));
                 btnM.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
                 btnM.setBorderPainted(false);
