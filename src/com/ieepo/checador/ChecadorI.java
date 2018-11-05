@@ -8,6 +8,7 @@ package com.ieepo.checador;
 import static com.digitalpersona.onetouch.processing.DPFPTemplateStatus.TEMPLATE_STATUS_READY;
 import com.ieepo.checador.components.Imagen;
 import com.ieepo.checador.db.ConnectionBD;
+import com.ieepo.checador.model.Area;
 import com.ieepo.checador.model.Ct;
 import com.ieepo.checador.model.Empleado;
 import com.ieepo.checador.model.Horario;
@@ -42,15 +43,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import javax.swing.event.TableColumnModelEvent;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.crypto.hash.DefaultHashService;
 import org.apache.shiro.crypto.hash.Sha256Hash;
@@ -106,6 +103,7 @@ public class ChecadorI extends javax.swing.JApplet {
     Connection cn;
 
     ArrayList<Empleado> empleadosVisitantes;
+    ArrayList<Area> areas;
 
     /**
      * Initializes the applet Checador
@@ -152,15 +150,19 @@ public class ChecadorI extends javax.swing.JApplet {
                 DefaultPasswordService passwordService = new DefaultPasswordService();
                 passwordService.setHashService(hashService);
 
-                String cad = "PLUIS";
+                String cad = "Conasis75d55";
                 String dac = passwordService.encryptPassword(cad);
 
                 System.out.println("cad = " + cad);
                 System.out.println("dac = " + dac);
+                
+                main();
+                
+                /*if (main()) {
+                    return;
+                    //destroy();
+                }*
 
-                //if (main()) {
-                //    return;
-                //}
                 /*if(true){
                     try {
                         preferences.clear();
@@ -285,6 +287,7 @@ public class ChecadorI extends javax.swing.JApplet {
         jXLabel3 = new org.jdesktop.swingx.JXLabel();
         jXLabel4 = new org.jdesktop.swingx.JXLabel();
         jXLabel5 = new org.jdesktop.swingx.JXLabel();
+        cmbAquienVisita = new javax.swing.JComboBox<>();
 
         Acceder.setText("Acceder");
         Acceder.addActionListener(new java.awt.event.ActionListener() {
@@ -1063,6 +1066,8 @@ public class ChecadorI extends javax.swing.JApplet {
 
         jXLabel5.setText("Motivo:");
 
+        cmbAquienVisita.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout jpVisitantesFormularioLayout = new javax.swing.GroupLayout(jpVisitantesFormulario);
         jpVisitantesFormulario.setLayout(jpVisitantesFormularioLayout);
         jpVisitantesFormularioLayout.setHorizontalGroup(
@@ -1083,14 +1088,18 @@ public class ChecadorI extends javax.swing.JApplet {
                     .addComponent(txtNombreVisitante)
                     .addComponent(txtEmpleadoVisitante))
                 .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbEmpleadoVisitante, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpVisitantesFormularioLayout.createSequentialGroup()
-                        .addGap(194, 194, 194)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnAceptarVisitante, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnCancelarVisitante, javax.swing.GroupLayout.Alignment.TRAILING))))
+                            .addComponent(btnCancelarVisitante, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cmbEmpleadoVisitante, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(cmbAquienVisita, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addGap(61, 61, 61))
         );
         jpVisitantesFormularioLayout.setVerticalGroup(
@@ -1101,11 +1110,16 @@ public class ChecadorI extends javax.swing.JApplet {
                     .addComponent(jXLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtEmpleadoVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cmbEmpleadoVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(28, 28, 28)
-                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtNombreVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jXLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtNombreVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jXLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
+                        .addGap(41, 41, 41)
+                        .addComponent(cmbAquienVisita, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtPrimerApVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jXLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1122,7 +1136,7 @@ public class ChecadorI extends javax.swing.JApplet {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addComponent(btnAceptarVisitante)))
                     .addComponent(jXLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addContainerGap(39, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jpVisitantesFondoLayout = new javax.swing.GroupLayout(jpVisitantesFondo);
@@ -1755,12 +1769,12 @@ public class ChecadorI extends javax.swing.JApplet {
 
     private void VisitantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VisitantesActionPerformed
         // TODO add your handling code here:
+        cargarVisitantes();
         taparTodo();
         jpSection.setVisible(true);
         jpVisitantes.setVisible(true);
         jpVisitantesFondo.setVisible(true);
         jpVisitantesTabla.setVisible(true);
-        cargarVisitantes();
     }//GEN-LAST:event_VisitantesActionPerformed
 
     private void lbRegresarVisitantesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbRegresarVisitantesMouseClicked
@@ -1774,7 +1788,6 @@ public class ChecadorI extends javax.swing.JApplet {
         // TODO add your handling code here:
         String cadena;
         cadena = txtEmpleadoVisitante.getText().trim();
-        System.out.println("cadena.length() = " + cadena.length());
         if (cadena.length() == 0) {
             txtNombreVisitante.setEnabled(true);
             txtPrimerApVisitante.setEnabled(true);
@@ -1794,6 +1807,37 @@ public class ChecadorI extends javax.swing.JApplet {
         jpVisitantes.setVisible(true);
         jpVisitantesFondo.setVisible(true);
         jpVisitantesFormulario.setVisible(true);
+        txtEmpleadoVisitante.setText("");
+        txtNombreVisitante.setText("");
+        txtPrimerApVisitante.setText("");
+        txtSegundoApVisitante.setText("");
+        txaMotivo.setText("");
+        cmbEmpleadoVisitante.removeAllItems();
+        
+        areas = new ArrayList<>();
+        
+        try {
+            PreparedStatement consulta;
+            
+            consulta = cn.prepareStatement("SELECT * FROM area WHERE idct = ?");
+            consulta.setInt(1, id_ct);
+            ResultSet resultado = consulta.executeQuery();
+            
+            while (resultado.next()) {                
+                int id_area;
+                String nombre_area;
+                String nombre_responsable;
+                int activo;
+                
+                
+                id_area = resultado.getInt("idarea");
+                
+                
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnAgregarVisitanteActionPerformed
 
     private void cmbEmpleadoVisitanteItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbEmpleadoVisitanteItemStateChanged
@@ -1855,11 +1899,11 @@ public class ChecadorI extends javax.swing.JApplet {
                 consulta.setString(7, motivo);
                 consulta.setTimestamp(8, timestamp);
                 consulta.execute();
-            }else{
+            } else {
                 nombre = nombre.toUpperCase();
                 primer_apellido = primer_apellido.toUpperCase();
                 segundo_apellido = segundo_apellido.toUpperCase();
-                
+
                 consulta = cn.prepareStatement("INSERT INTO visitantes(idct, nombre, primerapellido, segundoapellido, motivo, fecha) VALUES (?,?,?,?,?,?)");
                 consulta.setInt(1, id_ct);
                 consulta.setString(2, nombre);
@@ -3008,7 +3052,7 @@ public class ChecadorI extends javax.swing.JApplet {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void cargarCts(String cadena) {
         cts = new ArrayList<>();
         try {
@@ -3035,91 +3079,9 @@ public class ChecadorI extends javax.swing.JApplet {
     }
 
     private Boolean main() {
-        String cadena = "%josue velazquez sanchez%";
-        try {
-            PreparedStatement consulta;
-            //consulta = cn.prepareStatement("SELECT * FROM empleados WHERE idct = ? and (nombre LIKE ? or appaterno LIKE ? or apmaterno LIKE ?) ORDER BY nombre");
-            consulta = cn.prepareStatement("SELECT * FROM empleados WHERE CONCAT_WS(' ', nombre, appaterno, apmaterno) LIKE ? ORDER BY nombre");
-            consulta.setString(1, cadena);
-            ResultSet resultado = consulta.executeQuery();
-            ArrayList<Empleado> empleadosVisitantes = new ArrayList<>();
-            while (resultado.next()) {
-                int idEmpleado;
-                String nombre;
-                String apPaterno;
-                String apMaterno;
-                String rfc;
-                int idct;
-
-                idEmpleado = resultado.getInt("idempleado");
-                nombre = resultado.getString("nombre").trim();
-                apPaterno = resultado.getString("apPaterno").trim();
-                apMaterno = resultado.getString("apMaterno").trim();
-                rfc = resultado.getString("rfc").trim();
-                idct = resultado.getInt("idct");
-
-                Empleado e = new Empleado(idEmpleado, nombre, apPaterno, apMaterno, rfc, idct);
-                empleadosVisitantes.add(e);
-            }
-
-            empleadosVisitantes.forEach((empleadosVisitante) -> {
-                System.out.println(empleadosVisitante.toString());
-            });
-            int id_area = 0;
-            String motivo = "motivo";
-            Date date = new Date();
-            Timestamp timestamp = new Timestamp(date.getTime());
-            Empleado empleado = empleadosVisitantes.get(0);
-            consulta = cn.prepareStatement("INSERT INTO visitantes(idarea, idct, nombre, primerapellido, segundoapellido, empresa, motivo, fecha) VALUES (?,?,?,?,?,?,?,?)");
-            consulta.setInt(1, id_area);
-            consulta.setInt(2, id_ct);
-            consulta.setString(3, empleado.getNombre());
-            consulta.setString(4, empleado.getApPaterno());
-            consulta.setString(5, empleado.getApMaterno());
-            consulta.setInt(6, empleado.getIdCt());
-            consulta.setString(7, motivo);
-            consulta.setTimestamp(8, timestamp);
-            consulta.execute();
-            System.out.println("timestamp = " + timestamp);
-            System.out.println("consulta = " + consulta);
-
-        } catch (SQLException ex) {
-            Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        /*ArrayList<Integer> numeros;
-        numeros = new ArrayList<>();
-        int tam = 15;
-
-        for (int i = 0; i < tam; i++) {
-            numeros.add((int) (Math.random() * tam * tam) + 1);
-        }
-
-        numeros.forEach((numero) -> {
-            System.out.print(numero + " ");
-        });
-        System.out.println("");
-        System.out.println("");
-
+      
         
-        for (int j = 0; j < tam - 1; j++) {
-            for (int i = 0; i < tam -j - 1; i++) {
-                int aux = numeros.get(i);
-                if (numeros.get(i + 1) > aux) {
-                    numeros.add(i, numeros.get(i + 1));
-                    numeros.remove(i + 1);
-                    numeros.add(i + 1, aux);
-                    numeros.remove(i + 1 + 1);
-                }
-            }
-        }
-        
-        System.out.println("");
-        System.out.println("");
-        numeros.forEach((numero) -> {
-            System.out.print(numero + " ");
-        });
-        System.out.println("");*/
+
         return true;
     }
 
@@ -3260,6 +3222,15 @@ public class ChecadorI extends javax.swing.JApplet {
                 }
             });
 
+            TableColumnModel columnModel = tblVisitantes.getColumnModel();
+
+            columnModel.getColumn(0).setPreferredWidth(30);
+            columnModel.getColumn(1).setPreferredWidth(240);
+            columnModel.getColumn(2).setPreferredWidth(180);
+            columnModel.getColumn(3).setPreferredWidth(100);
+            columnModel.getColumn(4).setPreferredWidth(80);
+            System.out.println(columnModel.getTotalColumnWidth());
+
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -3320,6 +3291,7 @@ public class ChecadorI extends javax.swing.JApplet {
     private javax.swing.JButton btnCancelarVisitante;
     private javax.swing.JButton btnEliminarHuellas;
     private javax.swing.JButton btnSeleccion;
+    private javax.swing.JComboBox<String> cmbAquienVisita;
     private javax.swing.JComboBox<String> cmbEmpleadoVisitante;
     private javax.swing.JComboBox<String> cmbEmpleados;
     private javax.swing.JScrollPane jScrollPane1;

@@ -18,22 +18,23 @@ import java.util.logging.Logger;
 public class ConnectionBD {
 
     private Connection conn = null;
+    
     /**
      * Pruebas
      */
     private String url = "jdbc:mysql://localhost:3306/controlasistencias";
     private String user = "varguelles";
     private String pass = "#1Qazse4";
-
+     
     /*
      * Produccion
      * 
      */
     /*
-        String url = "jdbc:mysql://10.186.11.219:3306/controlasistencias";
-        String user = "MCA";
-        String pass = "12345";
-     */
+    private String url = "jdbc:mysql://10.186.11.219:3306/controlasistencias";
+    private String user = "MCA";
+    private String pass = "12345";
+    */
     
     public Connection conectar() {
 
@@ -93,6 +94,5 @@ public class ConnectionBD {
     public void setPass(String pass) {
         this.pass = pass;
     }
-    
-    
+
 }
