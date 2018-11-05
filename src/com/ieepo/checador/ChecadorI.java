@@ -172,7 +172,9 @@ public class ChecadorI extends javax.swing.JApplet {
                 }*/
                 lbTitulo.setText(TITULO);
                 lbCt.setText("");
-                Imagen iii = new Imagen("com/ieepo/checador/images/logo.png", (int) (jpLogo.getPreferredSize().width * 0.5), jpLogoPng.getPreferredSize().height);
+                Imagen iii = new Imagen("com/ieepo/checador/images/logo.png", 
+                        (int) (jpLogo.getPreferredSize().width * 0.5), 
+                        jpLogoPng.getPreferredSize().height);
                 jpLogoPng.add(iii);
                 jpLogoPng.repaint();
 
@@ -1058,11 +1060,11 @@ public class ChecadorI extends javax.swing.JApplet {
             }
         });
 
-        jXLabel2.setText("Nombre:");
+        jXLabel2.setText("Nombre(*):");
 
-        jXLabel3.setText("Apellido paterno:");
+        jXLabel3.setText("Apellido paterno(*):");
 
-        jXLabel4.setText("Apellido materno:");
+        jXLabel4.setText("Apellido materno(*):");
 
         jXLabel5.setText("Motivo:");
 
@@ -1102,7 +1104,7 @@ public class ChecadorI extends javax.swing.JApplet {
                                 .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(cmbEmpleadoVisitante, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
-                                        .addGap(0, 10, Short.MAX_VALUE)
+                                        .addGap(0, 0, Short.MAX_VALUE)
                                         .addComponent(cmbAquienVisita, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addGap(61, 61, 61))
                     .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
@@ -1856,6 +1858,10 @@ public class ChecadorI extends javax.swing.JApplet {
                 cmbAquienVisita.addItem(area.getNombre_responsable());
             });
 
+            txtNombreVisitante.setEnabled(true);
+            txtPrimerApVisitante.setEnabled(true);
+            txtSegundoApVisitante.setEnabled(true);
+
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1892,6 +1898,28 @@ public class ChecadorI extends javax.swing.JApplet {
         Date date = new Date();
         Timestamp timestamp = new Timestamp(date.getTime());
         PreparedStatement consulta;
+
+        if (nombre.equals("") || primer_apellido.equals("") || segundo_apellido.equals("")) {
+            JOptionPane.showMessageDialog(null, "Completa los campos", "Error", JOptionPane.ERROR_MESSAGE);
+            if (txtEmpleadoVisitante.getText().length() > 0) {
+                txtEmpleadoVisitante.requestFocus();
+                return;
+            }
+            if (nombre.equals("")) {
+                txtNombreVisitante.requestFocus();
+                return;
+            }
+            if (primer_apellido.equals("")) {
+                txtPrimerApVisitante.requestFocus();
+                return;
+            }
+            if (segundo_apellido.equals("")) {
+                txtSegundoApVisitante.requestFocus();
+                return;
+            }
+            return;
+        }
+
         try {
             if (txtEmpleadoVisitante.getText().length() > 0) {
                 Empleado empleado = empleadosVisitantes.get(cmbEmpleadoVisitante.getSelectedIndex());
@@ -3104,8 +3132,6 @@ public class ChecadorI extends javax.swing.JApplet {
     }
 
     private Boolean main() {
-        
-        
 
         return true;
     }
@@ -3169,9 +3195,9 @@ public class ChecadorI extends javax.swing.JApplet {
                 Visitante visitante = visitantes.get(i);
                 JButton btnM = new JButton();
 
-                //ImageIcon icono = new ImageIcon("com/ieepo/checador/images/salir.png");
+                // ImageIcon icono = new ImageIcon("com/ieepo/checador/images/salir.png");
                 //btnM.setIcon(icono);
-                //btnM.setSize(50, 50);
+                btnM.setSize(50, 50);
                 btnM.setName(Integer.toString(visitante.getId_visita()));
                 btnM.setText("Salida");
                 btnM.setFont(new java.awt.Font("Arial", 3, 14));
@@ -3249,7 +3275,7 @@ public class ChecadorI extends javax.swing.JApplet {
 
             TableColumnModel columnModel = tblVisitantes.getColumnModel();
 
-            columnModel.getColumn(0).setPreferredWidth(30);
+            columnModel.getColumn(0).setPreferredWidth(50);
             columnModel.getColumn(1).setPreferredWidth(240);
             columnModel.getColumn(2).setPreferredWidth(180);
             columnModel.getColumn(3).setPreferredWidth(100);

@@ -1378,7 +1378,7 @@
                                               <Group type="103" groupAlignment="0" attributes="0">
                                                   <Component id="cmbEmpleadoVisitante" max="32767" attributes="0"/>
                                                   <Group type="102" attributes="0">
-                                                      <EmptySpace min="0" pref="10" max="32767" attributes="0"/>
+                                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                                       <Component id="cmbAquienVisita" min="-2" pref="240" max="-2" attributes="0"/>
                                                   </Group>
                                               </Group>
@@ -1512,17 +1512,17 @@
                     </Component>
                     <Component class="org.jdesktop.swingx.JXLabel" name="jXLabel2">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Nombre:"/>
+                        <Property name="text" type="java.lang.String" value="Nombre(*):"/>
                       </Properties>
                     </Component>
                     <Component class="org.jdesktop.swingx.JXLabel" name="jXLabel3">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Apellido paterno:"/>
+                        <Property name="text" type="java.lang.String" value="Apellido paterno(*):"/>
                       </Properties>
                     </Component>
                     <Component class="org.jdesktop.swingx.JXLabel" name="jXLabel4">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Apellido materno:"/>
+                        <Property name="text" type="java.lang.String" value="Apellido materno(*):"/>
                       </Properties>
                     </Component>
                     <Component class="org.jdesktop.swingx.JXLabel" name="jXLabel5">
