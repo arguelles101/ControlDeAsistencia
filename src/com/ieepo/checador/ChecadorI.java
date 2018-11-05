@@ -67,7 +67,7 @@ public class ChecadorI extends javax.swing.JApplet {
     private final String SALIDA = "SALIDA";
     private final String ENTRADA = "ENTRADA";
     private final String PERMISO = "PERMISO";
-    private final String FALTA = "Falta";
+    private final String FALTA = "FALTA";
     private final String RETARDO = "RETARDO";
     private final String ANTICIPADA = "ANTICIPADA";
 
@@ -155,15 +155,14 @@ public class ChecadorI extends javax.swing.JApplet {
 
                 System.out.println("cad = " + cad);
                 System.out.println("dac = " + dac);
-                
+
                 main();
-                
+
                 /*if (main()) {
                     return;
                     //destroy();
-                }*
-
-                /*if(true){
+                }
+                if(true){
                     try {
                         preferences.clear();
                     } catch (BackingStoreException ex) {
@@ -288,6 +287,7 @@ public class ChecadorI extends javax.swing.JApplet {
         jXLabel4 = new org.jdesktop.swingx.JXLabel();
         jXLabel5 = new org.jdesktop.swingx.JXLabel();
         cmbAquienVisita = new javax.swing.JComboBox<>();
+        jXLabel6 = new org.jdesktop.swingx.JXLabel();
 
         Acceder.setText("Acceder");
         Acceder.addActionListener(new java.awt.event.ActionListener() {
@@ -1068,6 +1068,8 @@ public class ChecadorI extends javax.swing.JApplet {
 
         cmbAquienVisita.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        jXLabel6.setText("Persona a quien visita:");
+
         javax.swing.GroupLayout jpVisitantesFormularioLayout = new javax.swing.GroupLayout(jpVisitantesFormulario);
         jpVisitantesFormulario.setLayout(jpVisitantesFormularioLayout);
         jpVisitantesFormularioLayout.setHorizontalGroup(
@@ -1088,19 +1090,25 @@ public class ChecadorI extends javax.swing.JApplet {
                     .addComponent(txtNombreVisitante)
                     .addComponent(txtEmpleadoVisitante))
                 .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpVisitantesFormularioLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnAceptarVisitante, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnCancelarVisitante, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cmbEmpleadoVisitante, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpVisitantesFormularioLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnAceptarVisitante, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(btnCancelarVisitante, javax.swing.GroupLayout.Alignment.TRAILING)))
                             .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(cmbAquienVisita, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addGap(61, 61, 61))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(cmbEmpleadoVisitante, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
+                                        .addGap(0, 10, Short.MAX_VALUE)
+                                        .addComponent(cmbAquienVisita, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(61, 61, 61))
+                    .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jXLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jpVisitantesFormularioLayout.setVerticalGroup(
             jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1117,7 +1125,9 @@ public class ChecadorI extends javax.swing.JApplet {
                             .addComponent(txtNombreVisitante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jXLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jpVisitantesFormularioLayout.createSequentialGroup()
-                        .addGap(41, 41, 41)
+                        .addGap(21, 21, 21)
+                        .addComponent(jXLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cmbAquienVisita, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpVisitantesFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1797,6 +1807,9 @@ public class ChecadorI extends javax.swing.JApplet {
             txtPrimerApVisitante.setEnabled(false);
             txtSegundoApVisitante.setEnabled(false);
         }
+        txtNombreVisitante.setText("");
+        txtPrimerApVisitante.setText("");
+        txtSegundoApVisitante.setText("");
         cargarEmpleadosVisitantes(cadena);
     }//GEN-LAST:event_txtEmpleadoVisitanteKeyReleased
 
@@ -1813,28 +1826,36 @@ public class ChecadorI extends javax.swing.JApplet {
         txtSegundoApVisitante.setText("");
         txaMotivo.setText("");
         cmbEmpleadoVisitante.removeAllItems();
-        
+
         areas = new ArrayList<>();
-        
+
         try {
             PreparedStatement consulta;
-            
+
             consulta = cn.prepareStatement("SELECT * FROM area WHERE idct = ?");
             consulta.setInt(1, id_ct);
             ResultSet resultado = consulta.executeQuery();
-            
-            while (resultado.next()) {                
+
+            while (resultado.next()) {
                 int id_area;
                 String nombre_area;
                 String nombre_responsable;
                 int activo;
-                
-                
+
                 id_area = resultado.getInt("idarea");
-                
-                
+                nombre_area = resultado.getString("nombredearea");
+                nombre_responsable = resultado.getString("nombrederesponsable");
+                activo = resultado.getInt("activo");
+
+                Area a = new Area(id_area, id_ct, nombre_area, nombre_responsable, activo);
+                areas.add(a);
             }
-            
+
+            cmbAquienVisita.removeAllItems();
+            areas.forEach((area) -> {
+                cmbAquienVisita.addItem(area.getNombre_responsable());
+            });
+
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1867,6 +1888,7 @@ public class ChecadorI extends javax.swing.JApplet {
         String primer_apellido = txtPrimerApVisitante.getText();
         String segundo_apellido = txtSegundoApVisitante.getText();
         String motivo = txaMotivo.getText();
+        int id_area = areas.get(cmbAquienVisita.getSelectedIndex()).getId_area();
         Date date = new Date();
         Timestamp timestamp = new Timestamp(date.getTime());
         PreparedStatement consulta;
@@ -1877,6 +1899,7 @@ public class ChecadorI extends javax.swing.JApplet {
                 consulta = cn.prepareStatement("SELECT * FROM cts WHERE idct = ?");
                 consulta.setInt(1, empleado.getIdCt());
                 ResultSet r = consulta.executeQuery();
+
                 if (r.next()) {
                     int id_ct_aux;
                     String clave;
@@ -1889,28 +1912,30 @@ public class ChecadorI extends javax.swing.JApplet {
                     ct_aux = new Ct(id_ct_aux, clave, domicilio);
                 }
 
-                consulta = cn.prepareStatement("INSERT INTO visitantes(idempresa, idct, nombre, primerapellido, segundoapellido, empresa, motivo, fecha) VALUES (?,?,?,?,?,?,?,?)");
+                consulta = cn.prepareStatement("INSERT INTO visitantes(idempresa, idarea, idct, nombre, primerapellido, segundoapellido, empresa, motivo, fecha) VALUES (?,?,?,?,?,?,?,?,?)");
                 consulta.setInt(1, ct_aux.getId_ct());
-                consulta.setInt(2, id_ct);
-                consulta.setString(3, empleado.getNombre());
-                consulta.setString(4, empleado.getApPaterno());
-                consulta.setString(5, empleado.getApMaterno());
-                consulta.setString(6, ct_aux.getDomicilio());
-                consulta.setString(7, motivo);
-                consulta.setTimestamp(8, timestamp);
+                consulta.setInt(2, id_area);
+                consulta.setInt(3, id_ct);
+                consulta.setString(4, empleado.getNombre());
+                consulta.setString(5, empleado.getApPaterno());
+                consulta.setString(6, empleado.getApMaterno());
+                consulta.setString(7, ct_aux.getDomicilio());
+                consulta.setString(8, motivo);
+                consulta.setTimestamp(9, timestamp);
                 consulta.execute();
             } else {
                 nombre = nombre.toUpperCase();
                 primer_apellido = primer_apellido.toUpperCase();
                 segundo_apellido = segundo_apellido.toUpperCase();
 
-                consulta = cn.prepareStatement("INSERT INTO visitantes(idct, nombre, primerapellido, segundoapellido, motivo, fecha) VALUES (?,?,?,?,?,?)");
-                consulta.setInt(1, id_ct);
-                consulta.setString(2, nombre);
-                consulta.setString(3, primer_apellido);
-                consulta.setString(4, segundo_apellido);
-                consulta.setString(5, motivo);
-                consulta.setTimestamp(6, timestamp);
+                consulta = cn.prepareStatement("INSERT INTO visitantes(idarea, idct, nombre, primerapellido, segundoapellido, motivo, fecha) VALUES (?,?,?,?,?,?,?)");
+                consulta.setInt(1, id_area);
+                consulta.setInt(2, id_ct);
+                consulta.setString(3, nombre);
+                consulta.setString(4, primer_apellido);
+                consulta.setString(5, segundo_apellido);
+                consulta.setString(6, motivo);
+                consulta.setTimestamp(7, timestamp);
                 consulta.execute();
             }
             taparTodo();
@@ -3079,7 +3104,7 @@ public class ChecadorI extends javax.swing.JApplet {
     }
 
     private Boolean main() {
-      
+        
         
 
         return true;
@@ -3229,7 +3254,6 @@ public class ChecadorI extends javax.swing.JApplet {
             columnModel.getColumn(2).setPreferredWidth(180);
             columnModel.getColumn(3).setPreferredWidth(100);
             columnModel.getColumn(4).setPreferredWidth(80);
-            System.out.println(columnModel.getTotalColumnWidth());
 
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
@@ -3301,6 +3325,7 @@ public class ChecadorI extends javax.swing.JApplet {
     private org.jdesktop.swingx.JXLabel jXLabel3;
     private org.jdesktop.swingx.JXLabel jXLabel4;
     private org.jdesktop.swingx.JXLabel jXLabel5;
+    private org.jdesktop.swingx.JXLabel jXLabel6;
     private org.jdesktop.swingx.JXPanel jpBienvenido;
     private org.jdesktop.swingx.JXPanel jpChecador;
     private org.jdesktop.swingx.JXPanel jpFondo;
