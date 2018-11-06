@@ -213,7 +213,6 @@ public class ChecadorI extends javax.swing.JApplet {
         pmMenu = new javax.swing.JPopupMenu();
         Acceder = new javax.swing.JMenuItem();
         Visitantes = new javax.swing.JMenuItem();
-        rectanglePainter1 = new org.jdesktop.swingx.painter.RectanglePainter();
         jpLogo = new org.jdesktop.swingx.JXPanel();
         jpLogoPng = new org.jdesktop.swingx.JXPanel();
         lbTitulo = new org.jdesktop.swingx.JXLabel();
@@ -267,6 +266,8 @@ public class ChecadorI extends javax.swing.JApplet {
         btnSeleccion = new javax.swing.JButton();
         txtAdmin = new javax.swing.JTextField();
         txtPassAdmin = new javax.swing.JPasswordField();
+        lbAdminstrador = new org.jdesktop.swingx.JXLabel();
+        lbContraAdmin = new org.jdesktop.swingx.JXLabel();
         jpVisitantes = new org.jdesktop.swingx.JXPanel();
         lbRegresarVisitantes = new org.jdesktop.swingx.JXLabel();
         jpVisitantesFondo = new org.jdesktop.swingx.JXPanel();
@@ -902,32 +903,45 @@ public class ChecadorI extends javax.swing.JApplet {
             }
         });
 
+        txtPassAdmin.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPassAdminKeyReleased(evt);
+            }
+        });
+
+        lbAdminstrador.setText("Administrador:");
+
+        lbContraAdmin.setText("Contraseña:");
+
         javax.swing.GroupLayout jpSeleccionarCtsLayout = new javax.swing.GroupLayout(jpSeleccionarCts);
         jpSeleccionarCts.setLayout(jpSeleccionarCtsLayout);
         jpSeleccionarCtsLayout.setHorizontalGroup(
             jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpSeleccionarCtsLayout.createSequentialGroup()
-                .addGroup(jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jpSeleccionarCtsLayout.createSequentialGroup()
-                        .addGap(414, 414, 414)
-                        .addComponent(btnSeleccion))
-                    .addGroup(jpSeleccionarCtsLayout.createSequentialGroup()
-                        .addGap(158, 158, 158)
-                        .addGroup(jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtPassAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
-                            .addComponent(txtAdmin))))
-                .addContainerGap(99, Short.MAX_VALUE))
+                .addGap(158, 158, 158)
+                .addGroup(jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnSeleccion)
+                    .addGroup(jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(lbAdminstrador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lbContraAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                        .addComponent(txtPassAdmin)))
+                .addContainerGap(242, Short.MAX_VALUE))
         );
         jpSeleccionarCtsLayout.setVerticalGroup(
             jpSeleccionarCtsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpSeleccionarCtsLayout.createSequentialGroup()
-                .addGap(133, 133, 133)
+                .addGap(113, 113, 113)
+                .addComponent(lbAdminstrador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
+                .addComponent(lbContraAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtPassAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(9, 9, 9)
+                .addGap(55, 55, 55)
                 .addComponent(btnSeleccion)
-                .addContainerGap(177, Short.MAX_VALUE))
+                .addContainerGap(111, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jpFondoLayout = new javax.swing.GroupLayout(jpFondo);
@@ -1633,7 +1647,15 @@ public class ChecadorI extends javax.swing.JApplet {
 
         String username = txtAdmin.getText();
         String password = txtPassAdmin.getText();
-
+        if (username.equals("")) {
+            txtAdmin.requestFocus();
+            return;
+        }
+        if(password.equals("")){
+            txtPassAdmin.requestFocus();
+            return;
+        }
+        
         DefaultHashService hashService = new DefaultHashService();
         hashService.setHashIterations(500000);
         hashService.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);
@@ -1654,8 +1676,6 @@ public class ChecadorI extends javax.swing.JApplet {
                 passSave = resultado.getString("pass");
                 id_ct_aux = resultado.getInt("idct");
             }
-            System.out.println("consulta = " + consulta);
-            System.out.println("id_ct_aux = " + id_ct_aux);
 
             if (passwordService.passwordsMatch(password, passSave)) {
                 Preferences preferences = Preferences.userNodeForPackage(ChecadorI.class);
@@ -1669,6 +1689,8 @@ public class ChecadorI extends javax.swing.JApplet {
                 inicio();
             } else {
                 JOptionPane.showOptionDialog(null, "Acceso denegado", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
+                txtPassAdmin.setText("");
+                txtPassAdmin.requestFocus();
             }
         } catch (SQLException ex) {
             Logger.getLogger(ChecadorI.class.getName()).log(Level.SEVERE, null, ex);
@@ -1928,7 +1950,9 @@ public class ChecadorI extends javax.swing.JApplet {
                 consulta = cn.prepareStatement("SELECT * FROM cts WHERE idct = ?");
                 consulta.setInt(1, empleado.getIdCt());
                 ResultSet r = consulta.executeQuery();
-
+                
+                System.out.println("consulta = " + consulta);
+                
                 if (r.next()) {
                     int id_ct_aux;
                     String clave;
@@ -1979,6 +2003,13 @@ public class ChecadorI extends javax.swing.JApplet {
 
 
     }//GEN-LAST:event_btnAceptarVisitanteActionPerformed
+
+    private void txtPassAdminKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPassAdminKeyReleased
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == 10) {
+            btnSeleccionActionPerformed(null);
+        }
+    }//GEN-LAST:event_txtPassAdminKeyReleased
 
     private void eliminarHuella(String dedoCad) {
         try {
@@ -3133,7 +3164,7 @@ public class ChecadorI extends javax.swing.JApplet {
     }
 
     private Boolean main() {
-
+                
         return true;
     }
 
@@ -3200,7 +3231,7 @@ public class ChecadorI extends javax.swing.JApplet {
                 btnM.setIcon(icono);
                 btnM.setSize(50, 50);
                 btnM.setName(Integer.toString(visitante.getId_visita()));
-                //btnM.setText("Salida");
+                btnM.setText("Salida");
                 btnM.setFont(new java.awt.Font("Arial", 3, 14));
                 btnM.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
                 btnM.setBorderPainted(false);
@@ -3368,8 +3399,10 @@ public class ChecadorI extends javax.swing.JApplet {
     private org.jdesktop.swingx.JXPanel jpVisitantesFormulario;
     private org.jdesktop.swingx.JXPanel jpVisitantesTabla;
     private org.jdesktop.swingx.JXLabel lbAdmin;
+    private org.jdesktop.swingx.JXLabel lbAdminstrador;
     private org.jdesktop.swingx.JXLabel lbBienvenido;
     private org.jdesktop.swingx.JXLabel lbCerrarSesion;
+    private org.jdesktop.swingx.JXLabel lbContraAdmin;
     private org.jdesktop.swingx.JXLabel lbCt;
     private org.jdesktop.swingx.JXLabel lbDiaMes;
     private org.jdesktop.swingx.JXLabel lbEmpPr;
@@ -3392,7 +3425,6 @@ public class ChecadorI extends javax.swing.JApplet {
     private org.jdesktop.swingx.JXLabel lbTipo;
     private org.jdesktop.swingx.JXLabel lbTitulo;
     private javax.swing.JPopupMenu pmMenu;
-    private org.jdesktop.swingx.painter.RectanglePainter rectanglePainter1;
     private org.jdesktop.swingx.JXTable tblVisitantes;
     private javax.swing.JTextArea txaMotivo;
     private javax.swing.JTextField txtAdmin;
