@@ -32,10 +32,14 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
@@ -173,8 +177,8 @@ public class ChecadorI extends javax.swing.JApplet {
                 }*/
                 lbTitulo.setText(TITULO);
                 lbCt.setText("");
-                Imagen iii = new Imagen("com/ieepo/checador/images/logo.png", 
-                        (int) (jpLogo.getPreferredSize().width * 0.5), 
+                Imagen iii = new Imagen("com/ieepo/checador/images/logo.png",
+                        (int) (jpLogo.getPreferredSize().width * 0.5),
                         jpLogoPng.getPreferredSize().height);
                 jpLogoPng.add(iii);
                 jpLogoPng.repaint();
@@ -1651,11 +1655,11 @@ public class ChecadorI extends javax.swing.JApplet {
             txtAdmin.requestFocus();
             return;
         }
-        if(password.equals("")){
+        if (password.equals("")) {
             txtPassAdmin.requestFocus();
             return;
         }
-        
+
         DefaultHashService hashService = new DefaultHashService();
         hashService.setHashIterations(500000);
         hashService.setHashAlgorithmName(Sha256Hash.ALGORITHM_NAME);
@@ -1950,9 +1954,9 @@ public class ChecadorI extends javax.swing.JApplet {
                 consulta = cn.prepareStatement("SELECT * FROM cts WHERE idct = ?");
                 consulta.setInt(1, empleado.getIdCt());
                 ResultSet r = consulta.executeQuery();
-                
+
                 System.out.println("consulta = " + consulta);
-                
+
                 if (r.next()) {
                     int id_ct_aux;
                     String clave;
@@ -2402,8 +2406,26 @@ public class ChecadorI extends javax.swing.JApplet {
                         } else {
                             if (contador == 1) {
                                 System.out.println("salida");
+
                                 Time horaEComparar = new Time(Integer.parseInt(fecha.substring(11, 13)), Integer.parseInt(fecha.substring(14, 16)), Integer.parseInt(fecha.substring(17, 19)));
                                 Time horaDBComparar = h.getHora_salida();
+
+                                resultadoIncidencias = consulta.executeQuery();
+                                resultadoIncidencias.next();
+                                Time horaEntrada = resultadoIncidencias.getTime("fechahora");
+                                LocalTime hE = LocalTime.parse(horaEntrada.toString());
+                                LocalTime hEC = LocalTime.parse(horaEComparar.toString());
+                                int min = (int) ChronoUnit.MINUTES.between(hE, hEC);
+                                if (min < 60) {
+                                    //JOptionPane.showMessageDialog(null, "Debe pasar una hora", "Error", JOptionPane.ERROR_MESSAGE);
+                                    lbBienvenido.setText("");
+                                    lbEmpleado.setText("Error, debe pasar una hora!");
+                                    lbBienvenido.setVisible(true);
+                                    lbEmpleado.setVisible(true);
+                                    estaVisibleAnteriorMente = false;
+                                    estaVisibleAnteriorMenteII = 0;
+                                    return;
+                                }
 
                                 String datos[] = compararSalida(horaEComparar, horaDBComparar, id_empleado);
                                 String tipo = datos[1] != null ? datos[1] + " " + datos[0] : datos[0];
@@ -2523,6 +2545,23 @@ public class ChecadorI extends javax.swing.JApplet {
                                     horaEComparar = new Time(Integer.parseInt(fecha.substring(11, 13)), Integer.parseInt(fecha.substring(14, 16)), Integer.parseInt(fecha.substring(17, 19)));
                                     horaDBComparar = h.getHora_salida();
 
+                                    resultadoIncidencias = consulta.executeQuery();
+                                    resultadoIncidencias.next();
+                                    Time horaEntrada = resultadoIncidencias.getTime("fechahora");
+                                    LocalTime hE = LocalTime.parse(horaEntrada.toString());
+                                    LocalTime hEC = LocalTime.parse(horaEComparar.toString());
+                                    int min = (int) ChronoUnit.MINUTES.between(hE, hEC);
+                                    if (min < 60) {
+                                        //JOptionPane.showMessageDialog(null, "Debe pasar una hora", "Error", JOptionPane.ERROR_MESSAGE);
+                                        lbBienvenido.setText("");
+                                        lbEmpleado.setText("Error, debe pasar una hora!");
+                                        lbBienvenido.setVisible(true);
+                                        lbEmpleado.setVisible(true);
+                                        estaVisibleAnteriorMente = false;
+                                        estaVisibleAnteriorMenteII = 0;
+                                        return;
+                                    }
+
                                     datos = compararSalida(horaEComparar, horaDBComparar, id_empleado);
                                     tipo = datos[1] != null ? datos[1] + " " + datos[0] : datos[0];
                                     ps = cn.prepareStatement("INSERT INTO incidencias(idempleado, fechahora, idctlocal, movimiento, tipo) VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
@@ -2587,6 +2626,25 @@ public class ChecadorI extends javax.swing.JApplet {
                                     System.out.println("salida_v");
                                     horaEComparar = new Time(Integer.parseInt(fecha.substring(11, 13)), Integer.parseInt(fecha.substring(14, 16)), Integer.parseInt(fecha.substring(17, 19)));
                                     horaDBComparar = h.getHora_salida_v();
+
+                                    resultadoIncidencias = consulta.executeQuery();
+                                    resultadoIncidencias.next();
+                                    resultadoIncidencias.next();
+                                    resultadoIncidencias.next();
+                                    Time horaEntrada1 = resultadoIncidencias.getTime("fechahora");
+                                    LocalTime hE1 = LocalTime.parse(horaEntrada1.toString());
+                                    LocalTime hEC1 = LocalTime.parse(horaEComparar.toString());
+                                    int min1 = (int) ChronoUnit.MINUTES.between(hE1, hEC1);
+                                    if (min1 < 60) {
+                                        //JOptionPane.showMessageDialog(null, "Debe pasar una hora", "Error", JOptionPane.ERROR_MESSAGE);
+                                        lbBienvenido.setText("");
+                                        lbEmpleado.setText("Error, debe pasar una hora!");
+                                        lbBienvenido.setVisible(true);
+                                        lbEmpleado.setVisible(true);
+                                        estaVisibleAnteriorMente = false;
+                                        estaVisibleAnteriorMenteII = 0;
+                                        return;
+                                    }
 
                                     datos = compararSalida(horaEComparar, horaDBComparar, id_empleado);
                                     tipo = datos[1] != null ? datos[1] + " " + datos[0] : datos[0];
@@ -2815,15 +2873,22 @@ public class ChecadorI extends javax.swing.JApplet {
             try {
                 PreparedStatement consulta;
                 String cadAdmin = txtAdministrador.getText();
-                consulta = cn.prepareStatement("SELECT idempleado FROM sis_usuarios WHERE usuario = BINARY ?");
+                consulta = cn.prepareStatement("SELECT idempleado FROM sis_usuarios WHERE usuario = BINARY ? AND idct = ?");
                 consulta.setString(1, cadAdmin);
+                consulta.setInt(2, id_ct);
                 ResultSet resultado = consulta.executeQuery();
                 int aux_id_empleado = 0;
                 if (resultado.next()) {
                     aux_id_empleado = resultado.getInt("idempleado");
                 }
+                //if (cadAdmin.equals("")) {
+                //  consulta = cn.prepareStatement("SELECT * FROM huella WHERE idempleado in (select idempleado from horarioempleado WHERE idct = ?)");
+                //consulta.setInt(1, id_ct);
+                //} else {
                 consulta = cn.prepareStatement("SELECT * FROM huella WHERE idempleado = ?");
                 consulta.setInt(1, aux_id_empleado);
+                //}
+                System.out.println("consulta = " + consulta);
                 resultado = consulta.executeQuery();
                 while (resultado.next()) {
                     byte templateBuffer[] = resultado.getBytes("huella");
@@ -3164,7 +3229,7 @@ public class ChecadorI extends javax.swing.JApplet {
     }
 
     private Boolean main() {
-                
+
         return true;
     }
 
@@ -3227,7 +3292,7 @@ public class ChecadorI extends javax.swing.JApplet {
                 Visitante visitante = visitantes.get(i);
                 JButton btnM = new JButton();
 
-                 ImageIcon icono = new ImageIcon("com/ieepo/checador/images/logo.png");
+                ImageIcon icono = new ImageIcon("com/ieepo/checador/images/logo.png");
                 btnM.setIcon(icono);
                 btnM.setSize(50, 50);
                 btnM.setName(Integer.toString(visitante.getId_visita()));
