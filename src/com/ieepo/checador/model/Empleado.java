@@ -10,6 +10,7 @@ package com.ieepo.checador.model;
  * @author varguelles
  */
 public class Empleado {
+
     private int idEmpleado;
     private String nombre;
     private String apPaterno;
@@ -87,11 +88,11 @@ public class Empleado {
 
     @Override
     public String toString() {
-        return nombre + " " + apPaterno + " " + apMaterno;
+        return nombre.trim() + " " + apPaterno.trim() + " " + apMaterno.trim();
         //return (nombre.length() + apPaterno.length() + apMaterno.length()) + " " + nombre + " " + apPaterno + " " + apMaterno;
     }
 
-    public String string(){
+    public String string() {
         return "<html>" + this.nombre + "<br>" + this.apPaterno + " " + this.apMaterno + "</html>";
-    }   
+    }
 }
