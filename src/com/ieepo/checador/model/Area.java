@@ -10,6 +10,7 @@ package com.ieepo.checador.model;
  * @author varguelles
  */
 public class Area {
+
     private int id_area;
     private int id_ct;
     private String nombre_area;
@@ -77,5 +78,5 @@ public class Area {
     @Override
     public String toString() {
         return "Area{" + "id_area=" + id_area + ", id_ct=" + id_ct + ", nombre_area=" + nombre_area + ", nombre_responsable=" + nombre_responsable + '}';
-    }   
+    }
 }

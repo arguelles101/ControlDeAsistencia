@@ -10,6 +10,7 @@ package com.ieepo.checador.model;
  * @author varguelles
  */
 public class AdminCt {
+
     private int id_admin_ct;
     private int id_empleado;
     private int id_ct;

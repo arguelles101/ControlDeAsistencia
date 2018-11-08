@@ -13,6 +13,7 @@ import java.sql.Time;
  * @author varguelles
  */
 public class Permiso {
+
     private int id_permiso;
     private int id_incidencia;
     private int id_empleado;
@@ -73,7 +74,7 @@ public class Permiso {
         this.nota = nota;
         this.tipo_permiso = tipo_permiso;
     }
-    
+
     public int getId_permiso() {
         return id_permiso;
     }
@@ -165,5 +166,5 @@ public class Permiso {
     @Override
     public String toString() {
         return "Permiso{" + "id_permiso=" + id_permiso + ", id_incidencia=" + id_incidencia + ", id_empleado=" + id_empleado + ", hora_inicio=" + hora_inicio + ", hora_reinicio=" + hora_reinicio + ", fecha_inicio=" + fecha_inicio + ", fecha_fin=" + fecha_reinicio + '}';
-    }   
+    }
 }

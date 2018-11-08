@@ -12,6 +12,7 @@ import java.sql.Time;
  * @author varguelles
  */
 public class Horario {
+
     private int id_horario;
     private int id_turno;
     private Time hora_entrada;
@@ -85,5 +86,5 @@ public class Horario {
 
     public void setHora_salida_v(Time hora_salida_v) {
         this.hora_salida_v = hora_salida_v;
-    }   
+    }
 }

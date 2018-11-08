@@ -14,7 +14,8 @@ import javax.swing.JPanel;
  *
  * @author varguelles
  */
-public class Imagen extends JPanel{
+public class Imagen extends JPanel {
+
     private String url;
     private int width;
     private int heigh;
@@ -28,26 +29,24 @@ public class Imagen extends JPanel{
         this.heigh = heigh;
         this.setSize(this.width, this.heigh);
     }
-    
+
     @Override
     public void paint(Graphics grafico) {
         Dimension height = getSize();
-        
+
         //Se selecciona la imagen que tenemos en el paquete de la //ruta del programa
-        
-        
-        try{
+        try {
             //ImageIcon Img = new ImageIcon(getClass().getResource(this.url));
             //ImageIcon Img = new ImageIcon(getClass().getResource(this.url));
             ImageIcon Img = new ImageIcon(getClass().getClassLoader().getResource(this.url));
             //ImageIcon Img = new ImageIcon(getImage(getCodeBase(), "/calculator/Warp.jpg"));
-            
+
             //se dibuja la imagen que tenemos en el paquete Images //dentro de un panel
             grafico.drawImage(Img.getImage(), 0, 0, height.width, height.height, null);
 
             setOpaque(false);
             super.paintComponent(grafico);
-        }catch(NullPointerException ex){
+        } catch (NullPointerException ex) {
             System.out.println(ex);
         }
     }
