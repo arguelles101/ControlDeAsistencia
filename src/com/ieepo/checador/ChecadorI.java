@@ -3111,6 +3111,10 @@ public class ChecadorI extends javax.swing.JApplet {
                 fecha = dateFormat.format(aux);
 
                 while (!fecha.equals(date1i)) {
+                    System.out.println("aux = " + aux);
+                    System.out.println("aux.getYear() = " + aux.getYear());
+                    System.out.println("aux.getMonth() = " + aux.getMonth());
+                    System.out.println("aux.getDate() = " + aux.getDate());
                     aux = new Date(aux.getYear(), aux.getMonth(), aux.getDate() + 1);
                     fecha = dateFormat.format(aux);
                     PreparedStatement ps = cn.prepareStatement("INSERT INTO permisos(idempleado, horainicio, horareinicio, fechainicio, fechareinicio, autorizo, numdoc, nota, tipodpermiso) VALUES (?,?,?,?,?,?,?,?,?)");

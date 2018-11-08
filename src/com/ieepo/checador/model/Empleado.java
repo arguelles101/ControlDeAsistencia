@@ -88,7 +88,7 @@ public class Empleado {
 
     @Override
     public String toString() {
-        return nombre + " " + apPaterno + " " + apMaterno;
+        return nombre.trim() + " " + apPaterno.trim() + " " + apMaterno.trim();
         //return (nombre.length() + apPaterno.length() + apMaterno.length()) + " " + nombre + " " + apPaterno + " " + apMaterno;
     }
 
